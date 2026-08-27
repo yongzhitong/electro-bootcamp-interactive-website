@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>4.0 Assembly and testing | ELECTRO x Sri KDU</title>
+  <meta name="description" content="Assemble the chassis, mark your car, and complete a safe enclosed test run." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="progress-shell" aria-hidden="true"><div id="readingProgress" class="reading-progress"></div></div>
+
+  <aside class="side-nav" aria-label="Bootcamp navigation">
+    <a class="brand-pill" href="index.html" aria-label="Home"><img class="brand-logo" src="assets/electro-logo.png" alt="ELECTRO" /></a>
+    <a href="index.html">Home</a>
+    <a href="circuits.html">Circuits</a>
+    <a href="h-bridge.html">H-Bridge</a>
+    <a href="programming.html">Code</a>
+    <a href="assembly.html">Build</a>
+    <a href="race.html">Race</a>
+    <button id="presentMode" class="nav-button" type="button">Presentation mode</button>
+  </aside>
+
+  <header class="hero" style="padding-top:72px">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Section 4.0 · Afternoon</p>
+      <h1>Build your car. <span>Make it yours.</span></h1>
+      <p class="hero-lead">About 28 kits look identical until you mark them. Fit the motors, seat the PCB, keep the wires honest, then prove it in the enclosed test zone — not the hallway.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="lesson-section reveal" id="chassis">
+      <div class="lesson-copy" id="assemblyStepper">
+        <p class="eyebrow">4.1 Chassis assembly</p>
+        <h2>From board to vehicle</h2>
+        <div class="step-count"><span data-step-now>1</span>/<span data-step-total>5</span></div>
+        <h3 data-step-title>Fit the motors</h3>
+        <p data-step-text>Clip or screw both motors onto the chassis so the wheels sit straight.</p>
+        <p class="why-text" data-step-why>Crooked motors make the car drift.</p>
+        <div class="control-row sticky-controls">
+          <button class="button small ghost" type="button" data-step-prev>← Back</button>
+          <button class="button small ghost" type="button" data-step-next>Next →</button>
+        </div>
+      </div>
+      <div class="interactive-card">
+        <h3>Build preview</h3>
+        <div class="build-stage">
+          <div id="miniCar" class="mini-car">
+            <div class="body"></div>
+            <div class="board"></div>
+            <div class="motor m1"></div>
+            <div class="motor m2"></div>
+          </div>
+        </div>
+        <p class="caption" style="text-align:center">Watch the car pick up motors, board, then your colours.</p>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="customise">
+      <div class="section-heading compact">
+        <p class="eyebrow">Do not mix cars</p>
+        <h2>Customise the chassis</h2>
+        <p>Tape, marker, sticker, or a name plate — anything visible from two metres away. If two cars look the same, someone will pick up the wrong remote pair after a crash.</p>
+      </div>
+      <div class="card-grid cols-3">
+        <article class="info-card"><h3>Name it</h3><p>Write your name under the chassis and on the top shell.</p></article>
+        <article class="info-card"><h3>Colour code</h3><p>Match a tape colour on the car to a note on your phone’s Wi-Fi name.</p></article>
+        <article class="info-card"><h3>Keep it light</h3><p>Decorate, but do not bury the antenna or block the wheels.</p></article>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal alt" id="testrun">
+      <div class="interactive-card">
+        <h3>Test-run rules</h3>
+        <ul class="safety-list">
+          <li>Drive only in the enclosed area the facilitators mark.</li>
+          <li>No throwing, dropping, or “just to see if it survives”.</li>
+          <li>If it smells hot or a wheel jams, power off and raise a hand.</li>
+          <li>Extra kits and batteries are ready — tell us before something dies mid-solder of your patience.</li>
+        </ul>
+      </div>
+      <div class="lesson-copy">
+        <p class="eyebrow">4.2 Test run</p>
+        <h2>Prove it works, then stop</h2>
+        <p>A test run is not the Grand Prix. You are checking: wheels on, Wi-Fi still linked, forward really means forward, and nothing is scraping the floor.</p>
+        <div class="callout">Reminder: you take this car home. Treat the test zone like a lab, not a demolition derby.</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="page-end" aria-hidden="true"></div>
+  <nav class="next-bar" aria-label="Lesson links">
+    <a class="button ghost" href="programming.html">← Code</a>
+    <a class="button primary" href="race.html">Next: Race day →</a>
+  </nav>
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="app.js"></script>
+</body>
+</html>

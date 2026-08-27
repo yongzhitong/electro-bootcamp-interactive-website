@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2.0 H-bridge | ELECTRO x Sri KDU</title>
+  <meta name="description" content="What an H-bridge is, how switches set motor direction, breadboard challenge, and PCB wiring." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="progress-shell" aria-hidden="true"><div id="readingProgress" class="reading-progress"></div></div>
+
+  <aside class="side-nav" aria-label="Bootcamp navigation">
+    <a class="brand-pill" href="index.html" aria-label="Home"><img class="brand-logo" src="assets/electro-logo.png" alt="ELECTRO" /></a>
+    <a href="index.html">Home</a>
+    <a href="circuits.html">Circuits</a>
+    <a href="h-bridge.html">H-Bridge</a>
+    <a href="programming.html">Code</a>
+    <a href="assembly.html">Build</a>
+    <a href="race.html">Race</a>
+    <button id="presentMode" class="nav-button" type="button">Presentation mode</button>
+  </aside>
+
+  <header class="hero" style="padding-top:72px">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Section 2.0 · Still morning</p>
+      <h1>Make a motor go <span>both ways</span></h1>
+      <p class="hero-lead">A battery alone only pushes current one way. An H-bridge is a clever switch puzzle that can flip that path, so the same motor can drive forwards or reverse.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel reveal motor-panel" id="what">
+      <div class="section-heading compact">
+        <p class="eyebrow">2.1 What is an H-bridge?</p>
+        <h2>Four switches, one motor, letter H</h2>
+        <p>Imagine the motor sitting on the cross-bar of a letter H. The four corner switches decide which way current travels. Opposite corners on = spin. Same side on = danger.</p>
+      </div>
+      <div class="motor-layout">
+        <div class="hbridge-card">
+          <h3>H-bridge switch view</h3>
+          <div class="hbridge" id="hbridge">
+            <div class="rail top">VCC</div>
+            <div class="rail bottom">GND</div>
+            <button class="switch s1" data-switch="S1" type="button">S1</button>
+            <button class="switch s2" data-switch="S2" type="button">S2</button>
+            <button class="switch s3" data-switch="S3" type="button">S3</button>
+            <button class="switch s4" data-switch="S4" type="button">S4</button>
+            <div class="motor-disc" id="motorDisc"><span>M</span></div>
+            <svg viewBox="0 0 420 310" aria-hidden="true">
+              <path class="bridge-line" d="M90 50 V260 H330 V50" />
+              <path class="bridge-line" d="M90 155 H330" />
+              <path id="currentPath" class="current-path" d="M90 50 V155 H210 H330 V260 H210 H90" />
+            </svg>
+          </div>
+        </div>
+        <div class="truth-card">
+          <h3>Digital input truth table</h3>
+          <div class="toggle-row" role="group" aria-label="INA and INB controls">
+            <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">INA: Low</button>
+            <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">INB: Low</button>
+          </div>
+          <div id="motorState" class="motor-state coast">Coast</div>
+          <table class="truth-table">
+            <thead><tr><th>INA</th><th>INB</th><th>Motor action</th></tr></thead>
+            <tbody>
+              <tr data-row="00"><td>Low</td><td>Low</td><td>Coast / stop</td></tr>
+              <tr data-row="10"><td>High</td><td>Low</td><td>Forward · S1 + S4</td></tr>
+              <tr data-row="01"><td>Low</td><td>High</td><td>Reverse · S2 + S3</td></tr>
+              <tr data-row="11"><td>High</td><td>High</td><td>Brake</td></tr>
+            </tbody>
+          </table>
+          <p class="hint">Never close S1 and S2 together (or S3 and S4). That shorts battery plus to minus and can kill the kit.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal" id="assemble">
+      <div class="lesson-copy">
+        <p class="eyebrow">2.2 Assemble on a breadboard</p>
+        <h2>Build the H, then poke the switches</h2>
+        <p>Your challenge: copy the H-bridge onto a breadboard. Then change which switches are closed and watch the motor. Predict first. Observe second.</p>
+        <ol class="animated-list">
+          <li>Place the motor as the cross-bar.</li>
+          <li>Add four switch paths to VCC and GND.</li>
+          <li>Close S1 + S4. Note the spin.</li>
+          <li>Close S2 + S3. The spin should flip.</li>
+          <li>Do not close both switches on the same side.</li>
+        </ol>
+      </div>
+      <div class="interactive-card">
+        <h3>Observation log</h3>
+        <p>Write what you saw on paper, then lock it in with the quiz below.</p>
+        <div class="card-grid cols-2">
+          <article class="info-card"><h3>S1 + S4</h3><p>Current should cross the motor one way. Label that “forward” on your chassis.</p></article>
+          <article class="info-card"><h3>S2 + S3</h3><p>Current crosses the other way. That is reverse, even if the wheel looks “wrong” until you define forward.</p></article>
+        </div>
+        <div class="callout" style="margin-top:16px">If nothing spins: check battery, motor wires, and that opposite corners — not the same pillar — are closed.</div>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="connection">
+      <div class="section-heading compact">
+        <p class="eyebrow">2.3 Connection</p>
+        <h2>PCB to motor and power</h2>
+        <p>The provided PCB is the solidified H-bridge. You no longer jumper every switch by hand. You do still have to join motor and battery the right way.</p>
+      </div>
+      <div class="split-lab">
+        <div class="video-placeholder">
+          <div class="video-toolbar"><span class="red"></span><span class="yellow"></span><span class="green"></span><strong>pcb-motor-power.mp4 · placeholder</strong></div>
+          <div class="photo-slot wide" style="margin:18px;min-height:260px;aspect-ratio:auto"><span>Wiring photo or clip goes here</span></div>
+        </div>
+        <div class="stepper-card" id="connectStepper">
+          <div class="step-count"><span data-step-now>1</span>/<span data-step-total>4</span></div>
+          <h3 data-step-title>Find the motor pads</h3>
+          <p data-step-text>On your provided PCB, locate the two motor outputs. These come from the H-bridge.</p>
+          <p class="why-text" data-step-why>The PCB is the tidy version of the breadboard circuit you just built.</p>
+          <div class="control-row sticky-controls">
+            <button class="button small ghost" type="button" data-step-prev>← Back</button>
+            <button class="button small ghost" type="button" data-step-next>Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel reveal worksheet-panel" id="quiz">
+      <div class="section-heading compact">
+        <p class="eyebrow">Checkpoint</p>
+        <h2>Did the switches click in your head?</h2>
+      </div>
+      <div class="worksheet-tools">
+        <button id="checkWorksheet" class="button primary" type="button">Check my answers</button>
+        <button id="showHints" class="button ghost" type="button">Show hints</button>
+        <button id="resetWorksheet" class="button ghost" type="button">Reset</button>
+        <div class="score-pill"><span id="scoreText">0/0 checked</span></div>
+      </div>
+      <div id="quizContainer" class="quiz-container"></div>
+    </section>
+  </main>
+
+  <div class="page-end" aria-hidden="true"></div>
+  <nav class="next-bar" aria-label="Lesson links">
+    <a class="button ghost" href="circuits.html">← Circuits</a>
+    <a class="button primary" href="programming.html">Next: Programming →</a>
+  </nav>
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="app.js"></script>
+</body>
+</html>

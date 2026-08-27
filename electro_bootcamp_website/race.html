@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>5.0 Racing + wrap-up | ELECTRO x Sri KDU</title>
+  <meta name="description" content="Race on the cardboard track, record times, then wrap up with photos, feedback, and take-home kits." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="progress-shell" aria-hidden="true"><div id="readingProgress" class="reading-progress"></div></div>
+
+  <aside class="side-nav" aria-label="Bootcamp navigation">
+    <a class="brand-pill" href="index.html" aria-label="Home"><img class="brand-logo" src="assets/electro-logo.png" alt="ELECTRO" /></a>
+    <a href="index.html">Home</a>
+    <a href="circuits.html">Circuits</a>
+    <a href="h-bridge.html">H-Bridge</a>
+    <a href="programming.html">Code</a>
+    <a href="assembly.html">Build</a>
+    <a href="race.html">Race</a>
+    <button id="presentMode" class="nav-button" type="button">Presentation mode</button>
+  </aside>
+
+  <header class="hero" style="padding-top:72px">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Section 5.0 · Finale</p>
+      <h1>The track is <span>open</span></h1>
+      <p class="hero-lead">A small course made of cardboard or pipes. One car at a time if the lane is narrow. We record times. We do not record crashes on purpose.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel reveal race-panel" id="track">
+      <div class="section-heading compact">
+        <p class="eyebrow">Race</p>
+        <h2>Cardboard Grand Prix</h2>
+        <p>Queue, drive clean, hand the lane to the next person. Facilitators keep a time sheet. Use the timer below if you want a practice clock at your table.</p>
+      </div>
+      <div class="race-track" aria-label="Animated race track">
+        <div class="finish-line"></div>
+        <div id="raceCar1" class="race-car car1">🏎️</div>
+        <div id="raceCar2" class="race-car car2">🚗</div>
+        <div id="raceCar3" class="race-car car3">🚙</div>
+      </div>
+      <div class="control-row center">
+        <button id="startRace" class="button primary" type="button">Start demo race</button>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal" id="timer">
+      <div class="interactive-card timer-box">
+        <p class="eyebrow">Lap clock</p>
+        <div class="time" id="raceTime" data-acc="0">00:00.00</div>
+        <div class="control-row center">
+          <button id="timerStart" class="button small" type="button">Start timer</button>
+          <button id="timerReset" class="button small ghost" type="button">Reset</button>
+        </div>
+      </div>
+      <div class="lesson-copy">
+        <p class="eyebrow">Set a time</p>
+        <h2>Record it, then reset the lane</h2>
+        <p>Write your best clean lap on the class sheet. A clean lap means all wheels on the course and no “help” from a hand on the chassis.</p>
+        <div class="callout">Pit rule: if your car dies, swap in a spare battery from the extra pile. Do not pry someone else’s pack.</div>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="safety">
+      <div class="section-heading compact">
+        <p class="eyebrow">Pit crew notes</p>
+        <h2>We packed extras on purpose</h2>
+      </div>
+      <div class="card-grid cols-2">
+        <article class="info-card"><h3>Spare kits</h3><p>If a board or motor is truly broken, raise a hand. Extra kits are here so one fault does not end your day.</p></article>
+        <article class="info-card"><h3>Spare batteries</h3><p>Power packs run out or arrive weak. Ask before you start guessing that the code “randomly died”.</p></article>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="takehome">
+      <div class="section-heading compact">
+        <p class="eyebrow">2:30 – 3:00 · Wrap-up</p>
+        <h2>Photos, feedback, take-home</h2>
+        <p>Group photo, a short feedback form, then you leave with hardware you can reuse. The ESP32 and motors can come off the car for a later project.</p>
+      </div>
+      <div class="takehome">
+        <article><strong>🚗 Car</strong><p>Your chassis, your stickers, your race scars.</p></article>
+        <article><strong>🟩 PCB</strong><p>The printed H-bridge board you wired up.</p></article>
+        <article><strong>📶 ESP32</strong><p>Detach it later and point it at a new idea.</p></article>
+      </div>
+      <div class="photo-slot wide" style="margin-top:22px" aria-label="Group photo placeholder"><span>Group photo lands here after the day</span></div>
+    </section>
+  </main>
+
+  <div class="page-end" aria-hidden="true"></div>
+  <nav class="next-bar" aria-label="Lesson links">
+    <a class="button ghost" href="assembly.html">← Build</a>
+    <a class="button primary" href="index.html">Back to home</a>
+  </nav>
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="app.js"></script>
+</body>
+</html>

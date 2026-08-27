@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3.0 Programming | ELECTRO x Sri KDU</title>
+  <meta name="description" content="Write applyDirection in Arduino, learn the pin HIGH/LOW map, and connect a phone to the ESP32 access point." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="cursor-glow" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="progress-shell" aria-hidden="true"><div id="readingProgress" class="reading-progress"></div></div>
+
+  <aside class="side-nav" aria-label="Bootcamp navigation">
+    <a class="brand-pill" href="index.html" aria-label="Home"><img class="brand-logo" src="assets/electro-logo.png" alt="ELECTRO" /></a>
+    <a href="index.html">Home</a>
+    <a href="circuits.html">Circuits</a>
+    <a href="h-bridge.html">H-Bridge</a>
+    <a href="programming.html">Code</a>
+    <a href="assembly.html">Build</a>
+    <a href="race.html">Race</a>
+    <button id="presentMode" class="nav-button" type="button">Presentation mode</button>
+  </aside>
+
+  <header class="hero" style="padding-top:72px">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Section 3.0 · After lunch</p>
+      <h1>Code the driver, then <span>go wireless</span></h1>
+      <p class="hero-lead">The H-bridge only listens to two pins: INA and INB. Your job in Arduino IDE is to set those pins HIGH or LOW for each direction. Then the ESP32 opens a local Wi-Fi shop so your phone can send the commands.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="lesson-section reveal" id="motor-code">
+      <div class="lesson-copy">
+        <p class="eyebrow">3.1 Motor driver code</p>
+        <h2>Write applyDirection</h2>
+        <p>You will fill in a function that takes a direction and writes the two pins. Use the same truth table from the H-bridge desk. Facilitators will tell you which ESP32 pins are INA and INB on your PCB.</p>
+        <div class="callout">Test yourself: “If I want reverse, which pin is HIGH?” If you can answer without peeking, you are ready to type.</div>
+      </div>
+      <div class="interactive-card">
+        <div class="code-editor" aria-label="Sample applyDirection function">
+          <header>Arduino IDE · applyDirection.ino</header>
+          <pre><span class="cm">// dir: 0 = stop, 1 = forward, 2 = reverse</span>
+<span class="kw">void</span> <span class="fn">applyDirection</span>(<span class="kw">int</span> dir) {
+  <span class="kw">if</span> (dir == <span class="num">1</span>) {
+    <span class="fn">digitalWrite</span>(INA, HIGH);
+    <span class="fn">digitalWrite</span>(INB, LOW);
+  } <span class="kw">else if</span> (dir == <span class="num">2</span>) {
+    <span class="fn">digitalWrite</span>(INA, LOW);
+    <span class="fn">digitalWrite</span>(INB, HIGH);
+  } <span class="kw">else</span> {
+    <span class="fn">digitalWrite</span>(INA, LOW);
+    <span class="fn">digitalWrite</span>(INB, LOW);
+  }
+}</pre>
+        </div>
+        <p class="hint" style="margin-top:14px">Live pin line: <strong id="codeHighlight">digitalWrite(INA, LOW);   digitalWrite(INB, LOW);</strong></p>
+        <div class="toggle-row" role="group" aria-label="Try the pins">
+          <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">INA: Low</button>
+          <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">INB: Low</button>
+        </div>
+        <div id="motorState" class="motor-state coast">Coast</div>
+      </div>
+    </section>
+
+    <section class="panel reveal" id="pin-test">
+      <div class="section-heading compact">
+        <p class="eyebrow">Pin check</p>
+        <h2>HIGH or LOW for each move?</h2>
+        <p>Based on the connections you just made, lock this table in your memory. The quiz at the bottom will ask the same thing in different words.</p>
+      </div>
+      <div class="pin-quiz">
+        <div class="pin-row-q"><strong>Forward</strong><span>INA HIGH</span><span>INB LOW</span></div>
+        <div class="pin-row-q"><strong>Reverse</strong><span>INA LOW</span><span>INB HIGH</span></div>
+        <div class="pin-row-q"><strong>Stop / coast</strong><span>INA LOW</span><span>INB LOW</span></div>
+        <div class="pin-row-q"><strong>Brake</strong><span>INA HIGH</span><span>INB HIGH</span></div>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal alt" id="wifi">
+      <div class="interactive-card">
+        <h3>Phone view</h3>
+        <div class="wifi-phone" aria-label="Phone Wi-Fi list">
+          <div class="notch"></div>
+          <div class="wifi-row"><span>Sri KDU-Student</span><span>🔒</span></div>
+          <div class="wifi-row active"><span>ELECTRO-Car-07</span><span>📡 local</span></div>
+          <div class="wifi-row"><span>Canteen_Free</span><span>🔒</span></div>
+          <p class="feedback success" style="margin-top:12px">Connected to ELECTRO-Car-07 · No internet (expected)</p>
+        </div>
+      </div>
+      <div class="lesson-copy" id="wifiStepper">
+        <p class="eyebrow">3.2 Wi-Fi connection</p>
+        <h2>The ESP32 is a tiny hotspot</h2>
+        <div class="step-count" style="width:auto;height:auto;padding:10px 14px;display:inline-grid"><span data-step-now>1</span>/<span data-step-total>5</span></div>
+        <h3 data-step-title>ESP32 becomes a mini Wi-Fi shop</h3>
+        <p data-step-text>Your board starts a local access point. It is a tiny network that only exists around your car.</p>
+        <p class="why-text" data-step-why>No school Wi-Fi needed. Phone talks straight to the car.</p>
+        <div class="control-row sticky-controls">
+          <button class="button small ghost" type="button" data-step-prev>← Back</button>
+          <button class="button small ghost" type="button" data-step-next>Next →</button>
+        </div>
+        <div class="callout">Bring a phone. After you join the car network, open the control website the facilitators write on the board. Then test-run before you touch the chassis.</div>
+      </div>
+    </section>
+
+    <section class="panel reveal worksheet-panel" id="quiz">
+      <div class="section-heading compact">
+        <p class="eyebrow">Checkpoint</p>
+        <h2>Code + Wi-Fi check</h2>
+        <p>If pins and Wi-Fi both work, the afternoon build is just mechanical. If they do not, fix it now.</p>
+      </div>
+      <div class="worksheet-tools">
+        <button id="checkWorksheet" class="button primary" type="button">Check my answers</button>
+        <button id="showHints" class="button ghost" type="button">Show hints</button>
+        <button id="resetWorksheet" class="button ghost" type="button">Reset</button>
+        <div class="score-pill"><span id="scoreText">0/0 checked</span></div>
+      </div>
+      <div id="quizContainer" class="quiz-container"></div>
+    </section>
+  </main>
+
+  <div class="page-end" aria-hidden="true"></div>
+  <nav class="next-bar" aria-label="Lesson links">
+    <a class="button ghost" href="h-bridge.html">← H-bridge</a>
+    <a class="button primary" href="assembly.html">Next: Assembly →</a>
+  </nav>
+  <button id="backToTop" class="back-to-top" type="button" aria-label="Back to top">↑</button>
+  <script src="app.js"></script>
+</body>
+</html>
