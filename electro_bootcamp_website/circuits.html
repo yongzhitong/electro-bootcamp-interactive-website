@@ -41,8 +41,17 @@
       </div>
       <div class="interactive-card">
         <h3>Real life vs diagram</h3>
-        <div class="photo-slot wide" aria-label="Placeholder for a real circuit photo"><span>Drop a real circuit photo here</span></div>
-        <p>Later, place a photo of a jumble of jumper wires above, and keep the clean symbol version in the next section. Students should feel why engineers refuse to work from photos alone.</p>
+        <div class="real-vs-diagram">
+          <figure>
+            <img src="assets/circuit-real.png" alt="Real battery, knife switch, and glowing lamp on a wooden base" />
+            <figcaption>Real life</figcaption>
+          </figure>
+          <figure>
+            <img src="assets/circuit-diagram.png" alt="Circuit diagram of a battery, switch, and lamp" />
+            <figcaption>Diagram</figcaption>
+          </figure>
+        </div>
+        <p>Same circuit, two languages. The photo shows a Duracell, a knife switch, and a glowing lamp. The diagram keeps only the useful facts: battery, switch, lamp, and how the wires join.</p>
       </div>
     </section>
 
@@ -60,10 +69,10 @@
           <p>Long line is positive. Short line is negative.</p>
         </article>
         <article class="symbol-card">
-          <svg viewBox="0 0 88 64" aria-hidden="true"><line x1="8" y1="32" x2="30" y2="32" stroke="#28e8ff" stroke-width="3"/><polygon points="30,20 58,32 30,44" fill="none" stroke="#ff4ac4" stroke-width="3"/><line x1="58" y1="20" x2="58" y2="44" stroke="#ff4ac4" stroke-width="3"/><line x1="58" y1="32" x2="80" y2="32" stroke="#28e8ff" stroke-width="3"/></svg>
+          <svg viewBox="0 0 88 64" aria-hidden="true"><line x1="8" y1="32" x2="26" y2="32" stroke="#28e8ff" stroke-width="3"/><circle cx="44" cy="32" r="14" fill="none" stroke="#ffd166" stroke-width="3"/><path d="M35 23 L53 41 M53 23 L35 41" fill="none" stroke="#ffd166" stroke-width="3"/><line x1="58" y1="32" x2="80" y2="32" stroke="#28e8ff" stroke-width="3"/></svg>
           <p class="tag">Output</p>
-          <h3>LED</h3>
-          <p>Lights up. Arrow triangle shows current direction.</p>
+          <h3>Lamp</h3>
+          <p>Lights up. Circle with a cross is the lamp symbol.</p>
         </article>
         <article class="symbol-card">
           <svg viewBox="0 0 88 64" aria-hidden="true"><path d="M8 32 H20 l6-10 8 20 8-20 8 20 8-20 6 10 H80" fill="none" stroke="#ffd166" stroke-width="3"/></svg>
@@ -104,6 +113,63 @@
       </div>
     </section>
 
+    <section class="lesson-section reveal" id="voltage-current">
+      <div class="lesson-copy">
+        <p class="eyebrow">Voltage and current</p>
+        <h2>Push, then flow</h2>
+        <p>Current is how much electricity is moving. Voltage is the push that makes it move. No push, no flow — just like a water slide with no tower.</p>
+        <div class="vc-pair">
+          <article class="info-card">
+            <p class="tag">Voltage</p>
+            <h3>The push</h3>
+            <p>Like the height of a water tank. A battery only makes that push across a lamp if it is actually connected to both sides of the lamp.</p>
+          </article>
+          <article class="info-card">
+            <p class="tag">Current</p>
+            <h3>The flow</h3>
+            <p>Like how much water is rushing through the pipe. Current can only exist if voltage is pushing. Unplug the battery and the lamp goes dark.</p>
+          </article>
+        </div>
+        <div class="callout">Remember: voltage needs a power source across the part. Current needs that voltage. Dark lamp = something is missing.</div>
+      </div>
+      <div class="interactive-card">
+        <h3 id="vcTitle">Battery across a lamp</h3>
+        <svg id="vcSvg" class="vc-on" viewBox="0 0 420 250" aria-label="Battery connected across a lamp">
+          <path class="circuit-wire vc-loop" d="M202 200 H50 V50 H190"/>
+          <path class="circuit-wire vc-loop" d="M230 50 H370 V200 H218"/>
+          <path id="vcChargePath" d="M202 200 H50 V50 H370 V200 H218" fill="none"/>
+          <circle class="junction" cx="50" cy="50" r="4"/>
+          <circle class="junction" cx="370" cy="50" r="4"/>
+          <circle class="junction" cx="50" cy="200" r="4"/>
+          <circle class="junction" cx="370" cy="200" r="4"/>
+          <g class="battery-symbol vc-battery">
+            <line x1="202" y1="178" x2="202" y2="222" stroke="#fff" stroke-width="4"/>
+            <line x1="218" y1="186" x2="218" y2="214" stroke="#fff" stroke-width="4"/>
+            <text x="196" y="240" fill="#b9c7e7" font-size="14">+</text>
+            <text x="213" y="240" fill="#b9c7e7" font-size="14">−</text>
+          </g>
+          <g class="vc-push" aria-hidden="true">
+            <path class="vc-push-arrow a1" d="M188 200 l14 -8 v16 z"/>
+            <path class="vc-push-arrow a2" d="M174 200 l12 -7 v14 z"/>
+            <path class="vc-push-arrow a3" d="M161 200 l11 -6 v12 z"/>
+          </g>
+          <g id="vcCharges" aria-hidden="true"></g>
+          <g class="lamp on" id="vcLamp">
+            <circle class="lamp-halo" cx="210" cy="50" r="34"/>
+            <circle class="lamp-glass" cx="210" cy="50" r="20"/>
+            <path class="lamp-filament" d="M197 37 L223 63 M223 37 L197 63"/>
+          </g>
+          <text class="vc-label vc-v" x="210" y="164" text-anchor="middle">Voltage = the push</text>
+          <text class="vc-label vc-i" x="210" y="22" text-anchor="middle">Current = the flow</text>
+          <text class="vc-label vc-off-note" x="210" y="164" text-anchor="middle">No battery across the lamp</text>
+        </svg>
+        <p id="vcHint" class="feedback">The battery sits across the lamp, so there is a push. The push makes current flow, and the lamp lights up.</p>
+        <div class="control-row">
+          <button class="button small" id="vcToggle" type="button">Unplug the battery</button>
+        </div>
+      </div>
+    </section>
+
     <section class="lesson-section reveal alt" id="series">
       <div class="interactive-card">
         <h3 id="compareTitle">Series: one path</h3>
@@ -112,29 +178,103 @@
           <button class="button small ghost" type="button" data-compare="parallel">Parallel</button>
         </div>
         <div class="compare-stage" id="compareStage" data-mode="series">
-          <svg id="seriesSvg" viewBox="0 0 520 200" aria-label="Series circuit with battery and two LEDs">
-            <rect x="20" y="80" width="50" height="40" rx="8" fill="#1b2440" stroke="#fff"/>
-            <text x="28" y="105" fill="#fff" font-size="14">BAT</text>
-            <path d="M70 100 H140" stroke="#28e8ff" stroke-width="4" fill="none"/>
-            <polygon class="led-bulb on" points="140,86 178,100 140,114" fill="#ff4ac4"/>
-            <path d="M178 100 H260" stroke="#28e8ff" stroke-width="4" fill="none"/>
-            <polygon class="led-bulb on" points="260,86 298,100 260,114" fill="#ff4ac4"/>
-            <path d="M298 100 H460 V160 H45 V120" stroke="#28e8ff" stroke-width="4" fill="none"/>
+          <svg id="seriesSvg" viewBox="0 0 560 248" aria-label="Series circuit with battery and two lamps">
+            <defs>
+              <filter id="seriesLampGlow" x="-90%" y="-90%" width="280%" height="280%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <path class="circuit-wire" d="M272 200 H40 V40 H188"/>
+            <path class="circuit-wire" d="M232 40 H348"/>
+            <path class="circuit-wire" d="M392 40 H520 V200 H288"/>
+            <circle class="junction" cx="40" cy="40" r="4"/>
+            <circle class="junction" cx="520" cy="40" r="4"/>
+            <circle class="junction" cx="40" cy="200" r="4"/>
+            <circle class="junction" cx="520" cy="200" r="4"/>
+            <g class="battery-symbol">
+              <line x1="272" y1="178" x2="272" y2="222" stroke="#fff" stroke-width="4"/>
+              <line x1="288" y1="186" x2="288" y2="214" stroke="#fff" stroke-width="4"/>
+              <text x="266" y="240" fill="#b9c7e7" font-size="14">+</text>
+              <text x="283" y="240" fill="#b9c7e7" font-size="14">−</text>
+            </g>
+            <g class="lamp on" data-lamp="1">
+              <circle class="lamp-halo" cx="210" cy="40" r="34"/>
+              <circle class="lamp-glass" cx="210" cy="40" r="20"/>
+              <path class="lamp-filament" d="M197 27 L223 53 M223 27 L197 53"/>
+              <g class="lamp-x" aria-hidden="true">
+                <line x1="188" y1="18" x2="232" y2="62"/>
+                <line x1="232" y1="18" x2="188" y2="62"/>
+              </g>
+            </g>
+            <g class="lamp on" data-lamp="2">
+              <circle class="lamp-halo" cx="370" cy="40" r="34"/>
+              <circle class="lamp-glass" cx="370" cy="40" r="20"/>
+              <path class="lamp-filament" d="M357 27 L383 53 M383 27 L357 53"/>
+              <g class="lamp-x" aria-hidden="true">
+                <line x1="348" y1="18" x2="392" y2="62"/>
+                <line x1="392" y1="18" x2="348" y2="62"/>
+              </g>
+            </g>
           </svg>
-          <svg id="parallelSvg" class="hidden" viewBox="0 0 520 200" aria-label="Parallel circuit with battery and two LEDs">
-            <rect x="20" y="80" width="50" height="40" rx="8" fill="#1b2440" stroke="#fff"/>
-            <text x="28" y="105" fill="#fff" font-size="14">BAT</text>
-            <path d="M70 100 H140 V50 H220" stroke="#28e8ff" stroke-width="4" fill="none"/>
-            <path d="M140 100 V150 H220" stroke="#28e8ff" stroke-width="4" fill="none"/>
-            <polygon class="led-bulb on" points="220,36 258,50 220,64" fill="#ff4ac4"/>
-            <polygon class="led-bulb on" points="220,136 258,150 220,164" fill="#ff4ac4"/>
-            <path d="M258 50 H400 V100" stroke="#28e8ff" stroke-width="4" fill="none"/>
-            <path d="M258 150 H400 V100 H70" stroke="#28e8ff" stroke-width="4" fill="none"/>
+          <svg id="parallelSvg" class="hidden" viewBox="0 0 360 340" aria-label="Parallel circuit with battery and two lamps">
+            <defs>
+              <filter id="parallelLampGlow" x="-90%" y="-90%" width="280%" height="280%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <path class="circuit-wire" d="M172 280 H50 V170"/>
+            <path class="circuit-wire" d="M188 280 H310 V170"/>
+            <path class="circuit-wire branch-a" d="M50 170 V50"/>
+            <path class="circuit-wire branch-a" d="M310 170 V50"/>
+            <path class="circuit-wire branch-a" d="M50 50 H160"/>
+            <path class="circuit-wire branch-a" d="M200 50 H310"/>
+            <path class="circuit-wire branch-b" d="M50 170 H160"/>
+            <path class="circuit-wire branch-b" d="M200 170 H310"/>
+            <circle class="junction branch-a" cx="50" cy="50" r="4"/>
+            <circle class="junction" cx="50" cy="170" r="4"/>
+            <circle class="junction" cx="50" cy="280" r="4"/>
+            <circle class="junction branch-a" cx="310" cy="50" r="4"/>
+            <circle class="junction" cx="310" cy="170" r="4"/>
+            <circle class="junction" cx="310" cy="280" r="4"/>
+            <g class="battery-symbol">
+              <line x1="172" y1="258" x2="172" y2="302" stroke="#fff" stroke-width="4"/>
+              <line x1="188" y1="266" x2="188" y2="294" stroke="#fff" stroke-width="4"/>
+              <text x="166" y="322" fill="#b9c7e7" font-size="14">+</text>
+              <text x="183" y="322" fill="#b9c7e7" font-size="14">−</text>
+            </g>
+            <g class="lamp on" data-lamp="1">
+              <circle class="lamp-halo" cx="180" cy="50" r="34"/>
+              <circle class="lamp-glass" cx="180" cy="50" r="20"/>
+              <path class="lamp-filament" d="M167 37 L193 63 M193 37 L167 63"/>
+              <g class="lamp-x" aria-hidden="true">
+                <line x1="158" y1="28" x2="202" y2="72"/>
+                <line x1="202" y1="28" x2="158" y2="72"/>
+              </g>
+            </g>
+            <g class="lamp on" data-lamp="2">
+              <circle class="lamp-halo" cx="180" cy="170" r="34"/>
+              <circle class="lamp-glass" cx="180" cy="170" r="20"/>
+              <path class="lamp-filament" d="M167 157 L193 183 M193 157 L167 183"/>
+              <g class="lamp-x" aria-hidden="true">
+                <line x1="158" y1="148" x2="202" y2="192"/>
+                <line x1="202" y1="148" x2="158" y2="192"/>
+              </g>
+            </g>
           </svg>
         </div>
-        <p id="compareText" class="feedback">In series, current has only one road. If one LED is removed, the whole loop breaks and both lights go out.</p>
+        <p id="compareText" class="feedback">In series, both lamps share the same current — the same flow. One road only. If one lamp is removed, the whole loop breaks and both lights go out.</p>
         <div class="control-row">
-          <button class="button small" id="breakLed" type="button">Remove one LED</button>
+          <button class="button small" id="breakLed" type="button">Remove one lamp</button>
           <button class="button small ghost" id="resetLeds" type="button">Reset lights</button>
         </div>
       </div>
@@ -143,8 +283,8 @@
         <h2>One road or two roads?</h2>
         <p>Series means parts line up on a single path. Parallel means parts sit on separate paths that share the same two ends.</p>
         <ol class="animated-list">
-          <li>Series: share current. One break stops everything.</li>
-          <li>Parallel: share voltage. One break can leave the other path alive.</li>
+          <li>Series: both lamps have the same current — they feel the same flow of electricity. One break stops everything.</li>
+          <li>Parallel: both lamps have the same voltage — they feel the same push from the battery. One break can leave the other path alive.</li>
           <li>Your car circuits will use both ideas, just like house lights vs cheap fairy lights.</li>
         </ol>
       </div>
@@ -153,15 +293,15 @@
     <section class="lesson-section reveal" id="breadboard-howto">
       <div class="lesson-copy">
         <p class="eyebrow">How to use a breadboard</p>
-        <h2>Rows are already wired for you</h2>
-        <p>A breadboard lets you test a circuit without soldering. Under the plastic, metal clips join holes in the same row. Tap a hole to see the connected family.</p>
-        <div class="callout">Rule of thumb: parts that should touch go in the same row. Parts that should stay separate go in different rows.</div>
+        <h2>Columns are already wired for you</h2>
+        <p>A breadboard lets you test a circuit without soldering. Under the plastic, metal clips join holes in the same column. Tap a hole to see the connected family.</p>
+        <div class="callout">Rule of thumb: parts that should touch go in the same column. Parts that should stay separate go in different columns.</div>
       </div>
       <div class="interactive-card">
         <h3>Tap a hole</h3>
         <div id="breadboard" class="breadboard" aria-label="Interactive breadboard"></div>
-        <div class="bb-legend"><span><i class="cyan"></i>Same row = connected</span><span><i class="gold"></i>Same column, different row</span></div>
-        <p id="bbHint" class="feedback">Tap any hole. Cyan marks the connected row.</p>
+        <div class="bb-legend"><span><i class="cyan"></i>Same column = connected</span><span><i class="gold"></i>Same row, not connected</span></div>
+        <p id="bbHint" class="feedback">Tap any hole. Cyan marks the connected column. The line shows the hidden metal clip.</p>
       </div>
     </section>
 

@@ -27,59 +27,207 @@
     <div class="hero-copy reveal">
       <p class="eyebrow">Section 2.0 · Still morning</p>
       <h1>Make a motor go <span>both ways</span></h1>
-      <p class="hero-lead">A battery alone only pushes current one way. An H-bridge is a clever switch puzzle that can flip that path, so the same motor can drive forwards or reverse.</p>
+      <p class="hero-lead">A battery alone only pushes current one way. Flip the battery and the motor flips too. An H-bridge is a clever switch puzzle that can flip that path without ever unplugging the battery.</p>
     </div>
   </header>
 
   <main>
+    <section class="lesson-section reveal" id="battery-motor">
+      <div class="lesson-copy">
+        <p class="eyebrow">2.1 Battery + motor</p>
+        <h2>Power a motor with a battery only</h2>
+        <p>Remember <a href="circuits.html#voltage-current">voltage and current</a> from Circuits? Voltage is the push. Current is the flow. A lamp lights when the battery sits across it. A motor is the same idea — except the flow turns into spin.</p>
+        <p>The battery only pushes one way: out of <strong>+</strong> and back into <strong>−</strong>. So the motor only spins one way. Rotate the battery and the terminals swap. The push flips. Current goes the other way. The motor reverses.</p>
+        <div class="callout">This is why we need an H-bridge next. On a race car you cannot flip the battery every time you want to reverse.</div>
+      </div>
+      <div class="interactive-card bm-card">
+        <h3 id="bmTitle">Battery across a motor</h3>
+        <svg id="bmSvg" class="bm-fwd" viewBox="0 0 420 250" role="img" aria-label="Battery connected to a motor. Rotate the battery to reverse the spin.">
+          <path class="circuit-wire" d="M202 200 H50 V50 H182"/>
+          <path class="circuit-wire" d="M238 50 H370 V200 H218"/>
+          <path id="bmPathFw" d="M202 200 H50 V50 H370 V200 H218" fill="none"/>
+          <path id="bmPathRev" d="M218 200 H370 V50 H50 V200 H202" fill="none"/>
+          <circle class="junction" cx="50" cy="50" r="4"/>
+          <circle class="junction" cx="370" cy="50" r="4"/>
+          <circle class="junction" cx="50" cy="200" r="4"/>
+          <circle class="junction" cx="370" cy="200" r="4"/>
+          <g id="bmChargesFw" class="bm-charges fw" aria-hidden="true"></g>
+          <g id="bmChargesRev" class="bm-charges rev" aria-hidden="true"></g>
+
+          <g id="bmMotor">
+            <circle class="motor-halo" cx="210" cy="50" r="38"/>
+            <circle class="motor-body" cx="210" cy="50" r="28"/>
+            <text class="motor-letter bm-letter" x="210" y="60">M</text>
+          </g>
+
+          <g id="bmBattery" class="bm-battery" role="button" tabindex="0" aria-label="Battery. Tap to rotate and reverse the motor." aria-pressed="false">
+            <rect class="bm-hit" x="168" y="166" width="84" height="80" rx="14"/>
+            <line class="bm-plate plus" x1="202" y1="178" x2="202" y2="222"/>
+            <line class="bm-plate minus" x1="218" y1="186" x2="218" y2="214"/>
+            <g class="vc-push" aria-hidden="true">
+              <path class="vc-push-arrow a1" d="M188 200 l14 -8 v16 z"/>
+              <path class="vc-push-arrow a2" d="M174 200 l12 -7 v14 z"/>
+              <path class="vc-push-arrow a3" d="M161 200 l11 -6 v12 z"/>
+            </g>
+          </g>
+          <text class="bm-pol" id="bmPolL" x="196" y="240">+</text>
+          <text class="bm-pol" id="bmPolR" x="222" y="240">−</text>
+          <text class="vc-label bm-v" x="210" y="160" text-anchor="middle">Voltage = the push</text>
+          <text class="vc-label bm-i" x="210" y="18" text-anchor="middle">Current = the flow</text>
+          <text class="bm-tap" x="210" y="248" text-anchor="middle">Tap the battery to flip + and −</text>
+        </svg>
+        <p id="bmHint" class="feedback">The battery pushes charges out of +. That flow is current, and it spins the motor one way.</p>
+        <div class="bm-state forward" id="bmState">Spinning clockwise</div>
+        <div class="control-row">
+          <button class="button small primary" id="bmFlip" type="button">Rotate the battery</button>
+        </div>
+      </div>
+    </section>
+
     <section class="panel reveal motor-panel" id="what">
       <div class="section-heading compact">
-        <p class="eyebrow">2.1 What is an H-bridge?</p>
+        <p class="eyebrow">2.2 What is an H-bridge?</p>
         <h2>Four switches, one motor, letter H</h2>
-        <p>Imagine the motor sitting on the cross-bar of a letter H. The four corner switches decide which way current travels. Opposite corners on = spin. Same side on = danger.</p>
+        <p>You just flipped the battery by hand. On a car that is messy. An H-bridge does the same job with switches. Imagine the motor sitting on the cross-bar of a letter H. Opposite corners on = spin. Same side on = danger.</p>
       </div>
       <div class="motor-layout">
         <div class="hbridge-card">
           <h3>H-bridge switch view</h3>
           <div class="hbridge" id="hbridge">
-            <div class="rail top">VCC</div>
-            <div class="rail bottom">GND</div>
-            <button class="switch s1" data-switch="S1" type="button">S1</button>
-            <button class="switch s2" data-switch="S2" type="button">S2</button>
-            <button class="switch s3" data-switch="S3" type="button">S3</button>
-            <button class="switch s4" data-switch="S4" type="button">S4</button>
-            <div class="motor-disc" id="motorDisc"><span>M</span></div>
-            <svg viewBox="0 0 420 310" aria-hidden="true">
-              <path class="bridge-line" d="M90 50 V260 H330 V50" />
-              <path class="bridge-line" d="M90 155 H330" />
-              <path id="currentPath" class="current-path" d="M90 50 V155 H210 H330 V260 H210 H90" />
+            <svg id="hbridgeSvg" viewBox="0 0 520 360" role="img" aria-label="H-bridge schematic with battery, motor, and four switches">
+              <path class="hb-wire" data-seg="topl" d="M90 48 H300"/>
+              <path class="hb-wire" data-seg="topr" d="M300 48 H400"/>
+              <path class="hb-wire" data-seg="botl" d="M90 302 H300"/>
+              <path class="hb-wire" data-seg="botr" d="M300 302 H400"/>
+              <path class="hb-wire" data-seg="bat+" d="M400 48 H430 V145"/>
+              <path class="hb-wire" data-seg="bat-" d="M430 169 V302 H400"/>
+              <path class="hb-wire" data-seg="s1a" d="M90 48 V88"/>
+              <path class="hb-wire" data-seg="s1b" d="M90 124 V175"/>
+              <path class="hb-wire" data-seg="s2a" d="M90 175 V226"/>
+              <path class="hb-wire" data-seg="s2b" d="M90 262 V302"/>
+              <path class="hb-wire" data-seg="s3a" d="M300 48 V88"/>
+              <path class="hb-wire" data-seg="s3b" d="M300 124 V175"/>
+              <path class="hb-wire" data-seg="s4a" d="M300 175 V226"/>
+              <path class="hb-wire" data-seg="s4b" d="M300 262 V302"/>
+              <path class="hb-wire" data-seg="ml" d="M90 175 H163"/>
+              <path class="hb-wire" data-seg="mr" d="M227 175 H300"/>
+              <circle class="junction" cx="90" cy="48" r="4"/>
+              <circle class="junction" cx="300" cy="48" r="4"/>
+              <circle class="junction" cx="90" cy="175" r="4"/>
+              <circle class="junction" cx="300" cy="175" r="4"/>
+              <circle class="junction" cx="90" cy="302" r="4"/>
+              <circle class="junction" cx="300" cy="302" r="4"/>
+
+              <g class="battery-symbol" id="batterySymbol">
+                <g class="battery-flames" aria-hidden="true">
+                  <g transform="translate(430 147)">
+                    <g class="fire-stack">
+                      <ellipse class="fire-glow" cx="0" cy="-20" rx="22" ry="28"/>
+                      <path class="fire-outer" d="M-13 3 C-18 -10 -7 -24 -5 -34 C-2 -44 0 -50 0 -50 C0 -50 2 -44 5 -34 C7 -24 18 -10 13 3 C7 8 -7 8 -13 3Z"/>
+                      <path class="fire-mid" d="M-8 4 C-11 -8 -4 -20 -3 -28 C-1 -36 0 -41 0 -41 C0 -41 1 -36 3 -28 C4 -20 11 -8 8 4 C4 7 -4 7 -8 4Z"/>
+                      <path class="fire-core" d="M-4 4 C-5 -5 -2 -13 -1 -19 C0 -25 0 -28 0 -28 C0 -28 0 -25 1 -19 C2 -13 5 -5 4 4 C2 6 -2 6 -4 4Z"/>
+                    </g>
+                  </g>
+                </g>
+                <text x="456" y="138" fill="#b9c7e7" font-size="16">+</text>
+                <line class="bat-plate" x1="410" y1="145" x2="450" y2="145" stroke="#fff" stroke-width="5"/>
+                <line class="bat-plate" x1="418" y1="169" x2="442" y2="169" stroke="#fff" stroke-width="7"/>
+                <text x="456" y="192" fill="#b9c7e7" font-size="16">−</text>
+              </g>
+
+              <g class="hb-sw" data-switch="S1" role="button" tabindex="0" aria-label="Switch S1" aria-pressed="false">
+                <rect class="sw-hit" x="10" y="78" width="80" height="56" rx="12"/>
+                <circle class="sw-dot" cx="90" cy="88" r="4"/>
+                <circle class="sw-dot" cx="90" cy="124" r="4"/>
+                <line class="sw-open" x1="90" y1="88" x2="112" y2="104"/>
+                <line class="sw-closed" x1="90" y1="88" x2="90" y2="124"/>
+                <rect class="sw-btn" x="8" y="92" width="44" height="28" rx="14"/>
+                <text class="sw-label" x="30" y="111">S1</text>
+              </g>
+              <g class="hb-sw" data-switch="S2" role="button" tabindex="0" aria-label="Switch S2" aria-pressed="false">
+                <rect class="sw-hit" x="10" y="216" width="80" height="56" rx="12"/>
+                <circle class="sw-dot" cx="90" cy="226" r="4"/>
+                <circle class="sw-dot" cx="90" cy="262" r="4"/>
+                <line class="sw-open" x1="90" y1="226" x2="112" y2="242"/>
+                <line class="sw-closed" x1="90" y1="226" x2="90" y2="262"/>
+                <rect class="sw-btn" x="8" y="230" width="44" height="28" rx="14"/>
+                <text class="sw-label" x="30" y="249">S2</text>
+              </g>
+              <g class="hb-sw" data-switch="S3" role="button" tabindex="0" aria-label="Switch S3" aria-pressed="false">
+                <rect class="sw-hit" x="298" y="78" width="80" height="56" rx="12"/>
+                <circle class="sw-dot" cx="300" cy="88" r="4"/>
+                <circle class="sw-dot" cx="300" cy="124" r="4"/>
+                <line class="sw-open" x1="300" y1="88" x2="322" y2="104"/>
+                <line class="sw-closed" x1="300" y1="88" x2="300" y2="124"/>
+                <rect class="sw-btn" x="328" y="92" width="44" height="28" rx="14"/>
+                <text class="sw-label" x="350" y="111">S3</text>
+              </g>
+              <g class="hb-sw" data-switch="S4" role="button" tabindex="0" aria-label="Switch S4" aria-pressed="false">
+                <rect class="sw-hit" x="298" y="216" width="80" height="56" rx="12"/>
+                <circle class="sw-dot" cx="300" cy="226" r="4"/>
+                <circle class="sw-dot" cx="300" cy="262" r="4"/>
+                <line class="sw-open" x1="300" y1="226" x2="322" y2="242"/>
+                <line class="sw-closed" x1="300" y1="226" x2="300" y2="262"/>
+                <rect class="sw-btn" x="328" y="230" width="44" height="28" rx="14"/>
+                <text class="sw-label" x="350" y="249">S4</text>
+              </g>
+
+              <g id="motorSymbol">
+                <circle class="motor-halo" cx="195" cy="175" r="40"/>
+                <circle class="motor-body" cx="195" cy="175" r="30"/>
+                <text class="motor-letter" x="195" y="186">M</text>
+              </g>
+
+              <path id="pathForward" class="current-path" d="M430 145 V48 H90 V175 H300 V302 H430 V169"/>
+              <path id="pathReverse" class="current-path" d="M430 145 V48 H300 V175 H90 V302 H430 V169"/>
+              <path id="pathShortLeft" class="current-path short" d="M430 145 V48 H90 V302 H430 V169"/>
+              <path id="pathShortRight" class="current-path short" d="M430 145 V48 H300 V302 H430 V169"/>
             </svg>
+            <div class="hb-sw-row" role="group" aria-label="Toggle H-bridge switches">
+              <button type="button" class="hb-sw-btn" data-switch="S1" aria-pressed="false"><strong>S1</strong><span>Tap to toggle</span></button>
+              <button type="button" class="hb-sw-btn" data-switch="S2" aria-pressed="false"><strong>S2</strong><span>Tap to toggle</span></button>
+              <button type="button" class="hb-sw-btn" data-switch="S3" aria-pressed="false"><strong>S3</strong><span>Tap to toggle</span></button>
+              <button type="button" class="hb-sw-btn" data-switch="S4" aria-pressed="false"><strong>S4</strong><span>Tap to toggle</span></button>
+            </div>
+            <p id="hbHint" class="feedback">Tap a switch button, or use INA / INB to set a whole side at once.</p>
           </div>
         </div>
         <div class="truth-card">
-          <h3>Digital input truth table</h3>
+          <h3>INA and INB</h3>
           <div class="toggle-row" role="group" aria-label="INA and INB controls">
             <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">INA: Low</button>
             <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">INB: Low</button>
           </div>
-          <div id="motorState" class="motor-state coast">Coast</div>
+          <div class="ina-guide">
+            <div class="guide-block">
+              <strong>INA controls the left leg</strong>
+              <p data-ina="high">High → S1 ON, S2 OFF</p>
+              <p data-ina="low">Low → S1 OFF, S2 ON</p>
+            </div>
+            <div class="guide-block">
+              <strong>INB controls the right leg</strong>
+              <p data-inb="high">High → S3 ON, S4 OFF</p>
+              <p data-inb="low">Low → S3 OFF, S4 ON</p>
+            </div>
+          </div>
+          <div id="motorState" class="motor-state coast">Coast / open</div>
           <table class="truth-table">
             <thead><tr><th>INA</th><th>INB</th><th>Motor action</th></tr></thead>
             <tbody>
-              <tr data-row="00"><td>Low</td><td>Low</td><td>Coast / stop</td></tr>
+              <tr data-row="00"><td>Low</td><td>Low</td><td>Brake to − · S2 + S4</td></tr>
               <tr data-row="10"><td>High</td><td>Low</td><td>Forward · S1 + S4</td></tr>
               <tr data-row="01"><td>Low</td><td>High</td><td>Reverse · S2 + S3</td></tr>
-              <tr data-row="11"><td>High</td><td>High</td><td>Brake</td></tr>
+              <tr data-row="11"><td>High</td><td>High</td><td>Brake to + · S1 + S3</td></tr>
             </tbody>
           </table>
-          <p class="hint">Never close S1 and S2 together (or S3 and S4). That shorts battery plus to minus and can kill the kit.</p>
+          <p class="hint">Tap switches one by one to experiment. If S1 and S2 are both ON — or S3 and S4 — current skips the motor and the battery and wire burn.</p>
         </div>
       </div>
     </section>
 
     <section class="lesson-section reveal" id="assemble">
       <div class="lesson-copy">
-        <p class="eyebrow">2.2 Assemble on a breadboard</p>
+        <p class="eyebrow">2.3 Assemble on a breadboard</p>
         <h2>Build the H, then poke the switches</h2>
         <p>Your challenge: copy the H-bridge onto a breadboard. Then change which switches are closed and watch the motor. Predict first. Observe second.</p>
         <ol class="animated-list">
@@ -103,7 +251,7 @@
 
     <section class="panel reveal" id="connection">
       <div class="section-heading compact">
-        <p class="eyebrow">2.3 Connection</p>
+        <p class="eyebrow">2.4 Connection</p>
         <h2>PCB to motor and power</h2>
         <p>The provided PCB is the solidified H-bridge. You no longer jumper every switch by hand. You do still have to join motor and battery the right way.</p>
       </div>

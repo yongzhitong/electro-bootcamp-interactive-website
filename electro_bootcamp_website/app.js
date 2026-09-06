@@ -165,35 +165,169 @@ function initHeroParticles() {
 function initSeriesParallel() {
   const stage = $('#compareStage');
   if (!stage) return;
+
+  const resetSvg = svg => {
+    if (!svg) return;
+    svg.classList.remove('circuit-off');
+    $$('.circuit-wire', svg).forEach(wire => wire.classList.remove('dead'));
+    $$('.lamp', svg).forEach(lamp => {
+      lamp.classList.add('on');
+      lamp.classList.remove('removed');
+    });
+  };
+
   const setMode = mode => {
     $$('[data-compare]').forEach(btn => {
       const on = btn.dataset.compare === mode;
       btn.classList.toggle('primary', on);
       btn.classList.toggle('ghost', !on);
     });
-    $$('.led-bulb', stage).forEach(led => led.classList.add('on'));
+    resetSvg($('#seriesSvg'));
+    resetSvg($('#parallelSvg'));
     $('#compareTitle').textContent = mode === 'series' ? 'Series: one path' : 'Parallel: two paths';
     $('#compareText').textContent = mode === 'series'
-      ? 'In series, current has only one road. If one LED is removed, the whole loop breaks and both lights go out.'
-      : 'In parallel, each LED has its own road. If one LED is removed, the other can stay on.';
+      ? 'In series, both lamps share the same current — the same flow. One road only. If one lamp is removed, the whole loop breaks and both lights go out.'
+      : 'In parallel, both lamps share the same voltage — the same push from the battery. Each lamp has its own road. If one lamp is removed, the other can stay on.';
     $('#seriesSvg')?.classList.toggle('hidden', mode !== 'series');
     $('#parallelSvg')?.classList.toggle('hidden', mode !== 'parallel');
     stage.dataset.mode = mode;
   };
+
   $$('[data-compare]').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.compare)));
   $('#breakLed')?.addEventListener('click', () => {
     const mode = stage.dataset.mode || 'series';
-    const leds = $$('.led-bulb', mode === 'series' ? $('#seriesSvg') : $('#parallelSvg'));
+    const svg = mode === 'series' ? $('#seriesSvg') : $('#parallelSvg');
+    const lamps = $$('.lamp', svg);
+    if (!lamps.length) return;
+    lamps[0].classList.add('removed');
+    lamps[0].classList.remove('on');
     if (mode === 'series') {
-      leds.forEach(led => led.classList.remove('on'));
-      $('#compareText').textContent = 'You broke the only path. Both LEDs go dark. That is why series circuits share one fate.';
+      lamps.forEach(lamp => lamp.classList.remove('on'));
+      svg.classList.add('circuit-off');
+      $('#compareText').textContent = 'You broke the only path, so the shared current stops. Both lamps go dark.';
     } else {
-      leds[0]?.classList.remove('on');
-      $('#compareText').textContent = 'You removed one LED. The other path still works, so the second LED stays bright.';
+      $$('.branch-a', svg).forEach(wire => wire.classList.add('dead'));
+      $('#compareText').textContent = 'You removed one lamp. The other still has the same battery push, so it stays bright.';
     }
   });
   $('#resetLeds')?.addEventListener('click', () => setMode(stage.dataset.mode || 'series'));
   setMode('series');
+}
+
+function initVoltageCurrent() {
+  const svg = $('#vcSvg');
+  const btn = $('#vcToggle');
+  const hint = $('#vcHint');
+  const title = $('#vcTitle');
+  const lamp = $('#vcLamp');
+  const charges = $('#vcCharges');
+  if (!svg || !btn) return;
+
+  if (charges && !charges.childElementCount) {
+    const count = 16;
+    const dur = 3.2;
+    for (let i = 0; i < count; i++) {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('r', i % 4 === 0 ? '4' : '3');
+      dot.setAttribute('class', 'vc-charge');
+      const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+      motion.setAttribute('dur', `${dur}s`);
+      motion.setAttribute('repeatCount', 'indefinite');
+      motion.setAttribute('begin', `${(i * dur / count).toFixed(2)}s`);
+      const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+      mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#vcChargePath');
+      mpath.setAttribute('href', '#vcChargePath');
+      motion.appendChild(mpath);
+      dot.appendChild(motion);
+      charges.appendChild(dot);
+    }
+  }
+
+  const paint = connected => {
+    svg.classList.toggle('vc-on', connected);
+    svg.classList.toggle('vc-off', !connected);
+    lamp?.classList.toggle('on', connected);
+    btn.textContent = connected ? 'Unplug the battery' : 'Connect the battery';
+    if (title) title.textContent = connected ? 'Battery across a lamp' : 'Battery unplugged';
+    if (hint) {
+      hint.textContent = connected
+        ? 'The battery pushes tiny charges out of the + side. That moving stream is current, and it lights the lamp.'
+        : 'Unplug the battery and the push stops. The charges freeze, there is no current, and the lamp stays dark.';
+    }
+    if (connected) svg.unpauseAnimations();
+    else svg.pauseAnimations();
+  };
+  btn.addEventListener('click', () => paint(!svg.classList.contains('vc-on')));
+  paint(true);
+}
+
+function spawnCharges(group, pathId, count = 14, dur = 2.8) {
+  if (!group || group.childElementCount) return;
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('r', i % 4 === 0 ? '4' : '3');
+    dot.setAttribute('class', 'vc-charge');
+    const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+    motion.setAttribute('dur', `${dur}s`);
+    motion.setAttribute('repeatCount', 'indefinite');
+    motion.setAttribute('begin', `${(i * dur / count).toFixed(2)}s`);
+    const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+    mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pathId);
+    mpath.setAttribute('href', pathId);
+    motion.appendChild(mpath);
+    dot.appendChild(motion);
+    group.appendChild(dot);
+  }
+}
+
+function initBatteryMotor() {
+  const svg = $('#bmSvg');
+  const battery = $('#bmBattery');
+  const btn = $('#bmFlip');
+  const hint = $('#bmHint');
+  const title = $('#bmTitle');
+  const state = $('#bmState');
+  const polL = $('#bmPolL');
+  const polR = $('#bmPolR');
+  if (!svg || !battery) return;
+
+  spawnCharges($('#bmChargesFw'), '#bmPathFw');
+  spawnCharges($('#bmChargesRev'), '#bmPathRev');
+
+  let flipped = false;
+  const paint = () => {
+    svg.classList.toggle('bm-fwd', !flipped);
+    svg.classList.toggle('bm-rev', flipped);
+    battery.setAttribute('aria-pressed', String(flipped));
+    if (polL) polL.textContent = flipped ? '−' : '+';
+    if (polR) polR.textContent = flipped ? '+' : '−';
+    if (title) title.textContent = flipped ? 'Battery flipped — current reverses' : 'Battery across a motor';
+    if (state) {
+      state.classList.toggle('forward', !flipped);
+      state.classList.toggle('reverse', flipped);
+      state.textContent = flipped ? 'Spinning anticlockwise' : 'Spinning clockwise';
+    }
+    if (hint) {
+      hint.textContent = flipped
+        ? '+ is now on the other side. The push flipped, current goes the other way, and the motor reverses.'
+        : 'The battery pushes charges out of +. That flow is current, and it spins the motor one way.';
+    }
+    if (btn) btn.textContent = flipped ? 'Rotate back' : 'Rotate the battery';
+  };
+
+  const toggle = () => {
+    flipped = !flipped;
+    paint();
+  };
+  battery.addEventListener('click', toggle);
+  battery.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggle();
+    }
+  });
+  btn?.addEventListener('click', toggle);
+  paint();
 }
 
 function initBreadboard() {
@@ -201,6 +335,19 @@ function initBreadboard() {
   if (!board) return;
   const cols = 10;
   const rows = 6;
+  const tracesWrap = document.createElement('div');
+  tracesWrap.className = 'bb-traces';
+  tracesWrap.setAttribute('aria-hidden', 'true');
+  const traces = [];
+  for (let c = 0; c < cols; c++) {
+    const trace = document.createElement('span');
+    trace.className = 'bb-trace';
+    trace.dataset.col = String(c);
+    tracesWrap.appendChild(trace);
+    traces.push(trace);
+  }
+  board.appendChild(tracesWrap);
+
   const cells = [];
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
@@ -214,34 +361,115 @@ function initBreadboard() {
       cells.push(hole);
     }
   }
+
+  const paint = (row, col) => {
+    cells.forEach(el => {
+      const sameCol = el.dataset.col === col;
+      const sameRow = el.dataset.row === row;
+      el.classList.toggle('linked', sameCol);
+      el.classList.toggle('same-row', sameRow && !sameCol);
+    });
+    traces.forEach(trace => trace.classList.toggle('active', trace.dataset.col === col));
+    $('#bbHint').textContent = `On a small breadboard like this, holes in the same column are connected. The cyan line is the hidden clip. Row ${Number(row) + 1} is gold so you can see those holes are not joined.`;
+  };
+
   board.addEventListener('click', e => {
     const hole = e.target.closest('.bb-hole');
     if (!hole) return;
-    const row = hole.dataset.row;
-    const col = hole.dataset.col;
-    cells.forEach(el => {
-      el.classList.toggle('linked', el.dataset.row === row);
-      el.classList.toggle('same-row', el.dataset.col === col && el.dataset.row !== row);
-    });
-    hole.classList.add('linked');
-    $('#bbHint').textContent = `On a small breadboard like this, holes in the same row are connected. Column ${Number(col) + 1} is highlighted in gold so you can compare.`;
+    paint(hole.dataset.row, hole.dataset.col);
   });
+  paint('0', '0');
 }
 
 let ina = false;
 let inb = false;
+const hbSwitches = { S1: false, S2: true, S3: false, S4: true };
 
 function initMotorDriver() {
   if (!$('#inaBtn') || !$('#inbBtn')) return;
-  $('#inaBtn').addEventListener('click', () => { ina = !ina; updateMotor(); });
-  $('#inbBtn').addEventListener('click', () => { inb = !inb; updateMotor(); });
-  $$('.switch').forEach(sw => sw.addEventListener('click', () => {
-    const name = sw.dataset.switch;
-    if (name === 'S1' || name === 'S4') { ina = !ina; }
-    if (name === 'S2' || name === 'S3') { inb = !inb; }
+  const bridge = $('#hbridgeSvg');
+
+  $('#inaBtn').addEventListener('click', () => {
+    ina = !ina;
+    if (bridge) {
+      hbSwitches.S1 = ina;
+      hbSwitches.S2 = !ina;
+    }
     updateMotor();
-  }));
+  });
+  $('#inbBtn').addEventListener('click', () => {
+    inb = !inb;
+    if (bridge) {
+      hbSwitches.S3 = inb;
+      hbSwitches.S4 = !inb;
+    }
+    updateMotor();
+  });
+
+  $$('[data-switch]', $('#hbridge') || document).forEach(el => {
+    const toggle = () => {
+      const name = el.dataset.switch;
+      if (!(name in hbSwitches)) return;
+      hbSwitches[name] = !hbSwitches[name];
+      updateMotor();
+    };
+    el.addEventListener('click', toggle);
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
   updateMotor();
+}
+
+function liveHBridgeSegs(cls, leftShort, rightShort) {
+  const live = new Set();
+  const add = (...ids) => ids.forEach(id => live.add(id));
+  if (cls === 'forward') add('bat+', 'topr', 'topl', 's1a', 's1b', 'ml', 'mr', 's4a', 's4b', 'botr', 'bat-');
+  else if (cls === 'reverse') add('bat+', 'topr', 's3a', 's3b', 'mr', 'ml', 's2a', 's2b', 'botl', 'botr', 'bat-');
+  else if (leftShort || rightShort) {
+    add('bat+', 'bat-');
+    if (leftShort) add('topr', 'topl', 's1a', 's1b', 's2a', 's2b', 'botl', 'botr');
+    if (rightShort) add('topr', 's3a', 's3b', 's4a', 's4b', 'botr');
+  } else if (cls === 'brake') {
+    if (hbSwitches.S1 && hbSwitches.S3) add('bat+', 'topr', 'topl', 's1a', 's1b', 's3a', 's3b');
+    if (hbSwitches.S2 && hbSwitches.S4) add('bat-', 'botr', 'botl', 's2a', 's2b', 's4a', 's4b');
+  }
+  return live;
+}
+
+function paintHBridge(cls, leftShort, rightShort) {
+  $('#pathForward')?.classList.toggle('active', cls === 'forward');
+  $('#pathReverse')?.classList.toggle('active', cls === 'reverse');
+  $('#pathShortLeft')?.classList.toggle('active', leftShort);
+  $('#pathShortRight')?.classList.toggle('active', rightShort);
+  const live = liveHBridgeSegs(cls, leftShort, rightShort);
+  $$('#hbridgeSvg [data-seg]').forEach(seg => {
+    const on = live.has(seg.dataset.seg);
+    seg.classList.toggle('live', on && cls !== 'short');
+    seg.classList.toggle('burn', on && cls === 'short');
+  });
+  const motor = $('#motorSymbol');
+  if (motor) {
+    motor.classList.remove('forward', 'reverse', 'brake', 'coast', 'short');
+    motor.classList.add(cls === 'short' ? 'coast' : cls);
+  }
+  $('#batterySymbol')?.classList.toggle('short', cls === 'short');
+  $$('#hbridge [data-switch]').forEach(g => {
+    const on = !!hbSwitches[g.dataset.switch];
+    g.classList.toggle('closed', on);
+    g.classList.toggle('on', on);
+    g.setAttribute('aria-pressed', String(on));
+  });
+  const hint = $('#hbHint');
+  if (!hint) return;
+  if (cls === 'short') hint.textContent = 'Same-side switches are both ON. Current skips the motor and dumps through the short — the battery and that wire burn.';
+  else if (cls === 'forward') hint.textContent = 'Forward: S1 and S4 are ON. Current goes left to right through the motor.';
+  else if (cls === 'reverse') hint.textContent = 'Reverse: S2 and S3 are ON. Current goes right to left through the motor. Unused branches stay off.';
+  else if (cls === 'brake') hint.textContent = 'Both motor terminals sit on the same rail, so the motor is braked.';
+  else hint.textContent = 'No complete path. Tap a switch button, or use INA / INB to set a whole side.';
 }
 
 function updateMotor() {
@@ -252,22 +480,49 @@ function updateMotor() {
   $('#inbBtn').textContent = `INB: ${inb ? 'High' : 'Low'}`;
   $('#inbBtn').classList.toggle('on', inb);
   $('#inbBtn').setAttribute('aria-pressed', String(inb));
+  $$('[data-ina]').forEach(p => p.classList.toggle('active', p.dataset.ina === (ina ? 'high' : 'low')));
+  $$('[data-inb]').forEach(p => p.classList.toggle('active', p.dataset.inb === (inb ? 'high' : 'low')));
 
+  const bridge = $('#hbridgeSvg');
   let state = 'Coast';
   let cls = 'coast';
-  let closed = [];
-  if (ina && !inb) { state = 'Forward'; cls = 'forward'; closed = ['S1', 'S4']; }
-  else if (!ina && inb) { state = 'Reverse'; cls = 'reverse'; closed = ['S2', 'S3']; }
-  else if (ina && inb) { state = 'Brake'; cls = 'brake'; closed = ['S1', 'S2', 'S3', 'S4']; }
+
+  if (bridge) {
+    const { S1, S2, S3, S4 } = hbSwitches;
+    const leftShort = S1 && S2;
+    const rightShort = S3 && S4;
+    if (leftShort || rightShort) {
+      state = 'Short circuit!';
+      cls = 'short';
+    } else if (S1 && S4 && !S2 && !S3) {
+      state = 'Forward';
+      cls = 'forward';
+    } else if (S2 && S3 && !S1 && !S4) {
+      state = 'Reverse';
+      cls = 'reverse';
+    } else if ((S1 && S3 && !S2 && !S4) || (S2 && S4 && !S1 && !S3)) {
+      state = 'Brake';
+      cls = 'brake';
+    } else {
+      state = 'Coast / open';
+      cls = 'coast';
+    }
+    paintHBridge(cls, leftShort, rightShort);
+  } else if (ina && !inb) {
+    state = 'Forward';
+    cls = 'forward';
+  } else if (!ina && inb) {
+    state = 'Reverse';
+    cls = 'reverse';
+  } else if (ina && inb) {
+    state = 'Brake';
+    cls = 'brake';
+  }
 
   if ($('#motorState')) {
     $('#motorState').textContent = state;
     $('#motorState').className = `motor-state ${cls}`;
   }
-  $('#motorDisc')?.classList.remove('forward', 'reverse', 'brake', 'coast');
-  $('#motorDisc')?.classList.add(cls);
-  $$('.switch').forEach(sw => sw.classList.toggle('closed', closed.includes(sw.dataset.switch)));
-  $('#currentPath')?.classList.toggle('active', cls === 'forward' || cls === 'reverse');
   $$('tr[data-row]').forEach(tr => tr.classList.toggle('active-row', tr.dataset.row === `${ina ? 1 : 0}${inb ? 1 : 0}`));
   if ($('#codeHighlight')) {
     $('#codeHighlight').textContent = cls === 'forward'
@@ -312,28 +567,41 @@ function initStepper(rootId, steps, extra) {
 }
 
 function initWifiStepper() {
+  const phonePane = $('#wifiPhonePane');
+  const photoPane = $('#wifiPhotoPane');
+  const photoHint = $('#wifiPhotoHint');
+  const photoTitle = $('#wifiPhotoTitle');
   initStepper('wifiStepper', [
-    { title: 'ESP32 becomes a mini Wi-Fi shop', text: 'Your board starts a local access point. It is a tiny network that only exists around your car.', why: 'No school Wi-Fi needed. Phone talks straight to the car.', row: 0 },
-    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look for a name like ELECTRO-Car-07. Each car can have its own name.', why: 'If two cars share one name, phones can get confused.', row: 1 },
-    { title: 'Join the car network', text: 'Tap the car Wi-Fi and connect. Your phone may say “no internet”. That is normal.', why: 'This network is only for control, not YouTube.', row: 1 },
-    { title: 'Open the control website', text: 'In the phone browser, open the address the facilitators give you. You should see drive buttons.', why: 'The ESP32 is also a tiny web server.', row: 2 },
-    { title: 'Test drive', text: 'Tap forward, reverse, and stop. If the wheels move, your code and Wi-Fi both work.', why: 'Fix problems now, before the race track gets busy.', row: 2 }
-  ], (step) => {
-    $$('.wifi-row').forEach((row, i) => row.classList.toggle('active', i === step.row));
+    { title: 'ESP32 becomes a mini Wi-Fi shop', text: 'Your board starts a local access point. It is a tiny network that only exists around your car.', why: 'No school Wi-Fi needed. Phone talks straight to the car.' },
+    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look for a name like ELECTRO-Car-07. Each car can have its own name.', why: 'If two cars share one name, phones can get confused.', photo: 'Drop step 2 photo: Wi-Fi settings' },
+    { title: 'Join the car network', text: 'Tap the car Wi-Fi and connect. Your phone may say “no internet”. That is normal.', why: 'This network is only for control, not YouTube.', photo: 'Drop step 3 photo: joining ELECTRO-Car-07' },
+    { title: 'Open the control website', text: 'In the phone browser, open the address the facilitators give you. You should see drive buttons.', why: 'The ESP32 is also a tiny web server.', photo: 'Drop step 4 photo: control website' },
+    { title: 'Test drive', text: 'Tap forward, reverse, and stop. If the wheels move, your code and Wi-Fi both work.', why: 'Fix problems now, before the race track gets busy.', photo: 'Drop step 5 photo: test drive' }
+  ], (step, index) => {
+    const showPhone = index === 0;
+    phonePane?.classList.toggle('hidden', !showPhone);
+    photoPane?.classList.toggle('hidden', showPhone);
+    if (showPhone) {
+      $$('.wifi-row').forEach(row => row.classList.toggle('active', row.textContent.includes('ELECTRO-Car-07')));
+    } else if (photoHint) {
+      photoHint.textContent = step.photo || 'Drop photo here';
+      if (photoTitle) photoTitle.textContent = `Step ${index + 1} photo`;
+    }
   });
 }
 
 function initAssemblyStepper() {
-  const car = $('#miniCar');
+  const photoHint = $('#assemblyPhotoHint');
+  const photoTitle = $('#assemblyPhotoTitle');
   initStepper('assemblyStepper', [
-    { title: 'Fit the motors', text: 'Clip or screw both motors onto the chassis so the wheels sit straight.', why: 'Crooked motors make the car drift.', look: 'show-motors' },
-    { title: 'Mount the PCB and ESP32', text: 'Seat the printed circuit board and ESP32 so they cannot rattle loose.', why: 'A bouncing board can unplug wires mid-race.', look: 'show-motors show-board' },
-    { title: 'Connect power and motors', text: 'Use the same PCB-to-motor and power wiring from the H-bridge lesson.', why: 'Wrong polarity can stop the car or stress the board.', look: 'show-motors show-board' },
-    { title: 'Mark your car', text: 'Add a sticker, colour, or name. Every student has the same kit, so make yours obvious.', why: 'No mix-ups when 28 cars hit the table.', look: 'show-motors show-board show-decal' },
-    { title: 'Gentle test run', text: 'Drive in the enclosed area only. No drops, no crashes into walls for fun.', why: 'You take this car home. Keep it in one piece.', look: 'show-motors show-board show-decal' }
-  ], (step) => {
-    if (!car) return;
-    car.className = `mini-car ${step.look}`;
+    { title: 'Fit the motors', text: 'Clip or screw both motors onto the chassis so the wheels sit straight.', why: 'Crooked motors make the car drift.', photo: 'Drop step 1 photo: motors on the chassis' },
+    { title: 'Mount the PCB and ESP32', text: 'Seat the printed circuit board and ESP32 so they cannot rattle loose.', why: 'A bouncing board can unplug wires mid-race.', photo: 'Drop step 2 photo: PCB and ESP32 seated' },
+    { title: 'Connect power and motors', text: 'Use the same PCB-to-motor and power wiring from the H-bridge lesson.', why: 'Wrong polarity can stop the car or stress the board.', photo: 'Drop step 3 photo: power and motor wiring' },
+    { title: 'Mark your car', text: 'Add a sticker, colour, or name. Every student has the same kit, so make yours obvious.', why: 'No mix-ups when 28 cars hit the table.', photo: 'Drop step 4 photo: marked / decorated car' },
+    { title: 'Gentle test run', text: 'Drive in the enclosed area only. No drops, no crashes into walls for fun.', why: 'You take this car home. Keep it in one piece.', photo: 'Drop step 5 photo: enclosed test run' }
+  ], (step, index) => {
+    if (photoHint) photoHint.textContent = step.photo || 'Drop photo here';
+    if (photoTitle) photoTitle.textContent = `Step ${index + 1} photo`;
   });
 }
 
@@ -354,7 +622,8 @@ const quizzes = {
       questions: [
         { id: 'c1', type: 'mcq', prompt: 'Why do engineers draw circuit diagrams instead of only photographing the real wires?', options: ['Photos are not allowed in class.', 'Diagrams use standard symbols so a messy real circuit becomes easy to read and share.', 'Diagrams make the circuit use less power.', 'Only computers can understand diagrams.'], correct: 1, hint: 'Think “simplify and communicate”.', answer: 'Diagrams simplify real wiring into standard symbols that anyone on the team can follow.' },
         { id: 'c2', type: 'mcq', prompt: 'Two LEDs share one path from the battery. If one LED is removed, both go out. What connection is that?', options: ['Parallel', 'Series', 'Wireless', 'Short circuit'], correct: 1, hint: 'One road only.', answer: 'Series. One broken part opens the whole loop.' },
-        { id: 'c3', type: 'mcq', prompt: 'On a breadboard, which holes are usually connected?', options: ['Random holes', 'Holes in the same row of a terminal strip', 'Only the four corner holes', 'None — you must solder them'], correct: 1, hint: 'Rows are the secret.', answer: 'Holes in the same row are linked inside the board.' },
+        { id: 'c5', type: 'mcq', prompt: 'A lamp stays dark. What must be true?', options: ['Current can flow even with no voltage.', 'Voltage is the flow, current is the push.', 'Current only flows if voltage is pushing, and voltage needs a power source across the lamp.', 'Lamps never need a battery.'], correct: 2, hint: 'Think push, then flow.', answer: 'No battery across the lamp means no voltage (push), so no current (flow). The lamp stays dark.' },
+        { id: 'c3', type: 'mcq', prompt: 'On a breadboard, which holes are usually connected?', options: ['Random holes', 'Holes in the same column of a terminal strip', 'Only the four corner holes', 'None — you must solder them'], correct: 1, hint: 'Columns are the secret.', answer: 'Holes in the same column are linked inside the board.' },
         { id: 'c4', type: 'mcq', prompt: 'A PCB is best described as…', options: ['A paper sketch of a circuit', 'A solidified, printed version of a circuit with copper tracks', 'A type of battery', 'A Wi-Fi password'], correct: 1, hint: 'Printed Circuit Board.', answer: 'A PCB is a solid board with printed copper tracks. Your kit includes one.' }
       ]
     }
@@ -364,6 +633,7 @@ const quizzes = {
       title: 'Checkpoint · H-bridge logic',
       tag: 'After the switch demo',
       questions: [
+        { id: 'h0', type: 'mcq', prompt: 'You connect a battery straight to a motor. What happens if you rotate the battery so + and − swap?', options: ['The motor always spins the same way', 'Current reverses, so the motor spins the other way', 'The motor becomes a lamp', 'Voltage disappears'], correct: 1, hint: 'Think about the push from Circuits.', answer: 'Swapping + and − reverses the push, so current goes the other way and the motor reverses.' },
         { id: 'h1', type: 'mcq', prompt: 'Why do we use an H-bridge with a DC motor?', options: ['To make the battery last forever', 'To let the same motor spin forwards or backwards by changing switch paths', 'To turn the motor into a speaker', 'To connect Wi-Fi'], correct: 1, hint: 'Direction control.', answer: 'An H-bridge flips which way current goes through the motor.' },
         { id: 'h2', type: 'mcq', prompt: 'To move forwards, which pair of switches should be closed?', options: ['S1 and S3', 'S1 and S4', 'S2 and S4', 'All four'], correct: 1, hint: 'Opposite corners.', answer: 'S1 and S4 close for forward. S2 and S3 close for reverse.' },
         { id: 'h3', type: 'mcq', prompt: 'What is the dangerous move on an H-bridge?', options: ['Leaving all switches open', 'Closing both switches on the same side, like S1 and S2, which shorts power to ground', 'Spinning the motor slowly', 'Using a breadboard first'], correct: 1, hint: 'Never give electricity a shortcut around the motor.', answer: 'Closing S1 and S2 together (or S3 and S4) can short the supply. Do not do that.' },
@@ -503,8 +773,8 @@ function initRace() {
     cars.forEach(car => { car.style.transition = 'none'; car.style.left = '20px'; });
     setTimeout(() => {
       cars.forEach((car, i) => {
-        car.style.transition = `left ${2.1 + Math.random() * 1.2}s cubic-bezier(.2,.7,.2,1) ${i * .08}s`;
-        car.style.left = `${76 + Math.random() * 10}%`;
+        car.style.transition = `left ${2.2 + Math.random() * 1.1}s cubic-bezier(.15,.75,.2,1) ${i * .1}s`;
+        car.style.left = 'calc(100% - 52px)';
       });
       confetti(75);
     }, 80);
@@ -570,6 +840,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initGlobalUI();
   initHeroParticles();
   initSeriesParallel();
+  initVoltageCurrent();
+  initBatteryMotor();
   initBreadboard();
   initMotorDriver();
   initWifiStepper();

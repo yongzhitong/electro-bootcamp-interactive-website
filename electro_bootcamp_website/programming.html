@@ -80,20 +80,26 @@
     </section>
 
     <section class="lesson-section reveal alt" id="wifi">
-      <div class="interactive-card">
-        <h3>Phone view</h3>
-        <div class="wifi-phone" aria-label="Phone Wi-Fi list">
-          <div class="notch"></div>
-          <div class="wifi-row"><span>Sri KDU-Student</span><span>🔒</span></div>
-          <div class="wifi-row active"><span>ELECTRO-Car-07</span><span>📡 local</span></div>
-          <div class="wifi-row"><span>Canteen_Free</span><span>🔒</span></div>
-          <p class="feedback success" style="margin-top:12px">Connected to ELECTRO-Car-07 · No internet (expected)</p>
+      <div class="interactive-card" id="wifiVisual">
+        <div id="wifiPhonePane">
+          <h3>Phone view</h3>
+          <div class="wifi-phone" aria-label="Phone Wi-Fi list">
+            <div class="notch"></div>
+            <div class="wifi-row"><span>Sri KDU-Student</span><span>🔒</span></div>
+            <div class="wifi-row active"><span>ELECTRO-Car-07</span><span>📡 local</span></div>
+            <div class="wifi-row"><span>Canteen_Free</span><span>🔒</span></div>
+            <p class="feedback success" style="margin-top:12px">Connected to ELECTRO-Car-07 · No internet (expected)</p>
+          </div>
+        </div>
+        <div id="wifiPhotoPane" class="hidden">
+          <h3 id="wifiPhotoTitle">Step photo</h3>
+          <div class="photo-slot wide" style="min-height:260px;aspect-ratio:auto"><span id="wifiPhotoHint">Drop photo here</span></div>
         </div>
       </div>
       <div class="lesson-copy" id="wifiStepper">
         <p class="eyebrow">3.2 Wi-Fi connection</p>
         <h2>The ESP32 is a tiny hotspot</h2>
-        <div class="step-count" style="width:auto;height:auto;padding:10px 14px;display:inline-grid"><span data-step-now>1</span>/<span data-step-total>5</span></div>
+        <div class="step-count"><span data-step-now>1</span>/<span data-step-total>5</span></div>
         <h3 data-step-title>ESP32 becomes a mini Wi-Fi shop</h3>
         <p data-step-text>Your board starts a local access point. It is a tiny network that only exists around your car.</p>
         <p class="why-text" data-step-why>No school Wi-Fi needed. Phone talks straight to the car.</p>
