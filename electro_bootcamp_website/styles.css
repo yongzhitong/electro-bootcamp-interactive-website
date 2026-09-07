@@ -233,7 +233,8 @@ input[type="range"] { width: 100%; accent-color: var(--cyan); }
 .hb-sw-btn.on { background: linear-gradient(135deg, var(--green), var(--cyan)); color: #06143b; border-color: transparent; }
 .hb-sw-btn.on span { color: #12324a; }
 .motor-body { fill: #1a2445; stroke: #fff; stroke-width: 3; }
-.motor-letter { fill: #fff; font-size: 28px; font-weight: 900; text-anchor: middle; transform-box: fill-box; transform-origin: center; }
+.motor-letter { fill: #fff; font-size: 28px; font-weight: 900; text-anchor: middle; }
+#motorSymbol .motor-spin { transform-box: view-box; transform-origin: 195px 175px; }
 #hbridgeSvg { font-family: var(--font); }
 .motor-halo { fill: rgba(255,209,102,.08); opacity: 0; }
 .battery-flames { display: none; }
@@ -244,8 +245,8 @@ input[type="range"] { width: 100%; accent-color: var(--cyan); }
 #motorSymbol.forward .motor-halo, #motorSymbol.reverse .motor-halo { opacity: 1; }
 #motorSymbol.forward .motor-body { stroke: var(--green); filter: drop-shadow(0 0 10px var(--green)); }
 #motorSymbol.reverse .motor-body { stroke: var(--pink); filter: drop-shadow(0 0 10px var(--pink)); }
-#motorSymbol.forward .motor-letter { animation: hbSpinFw .7s linear infinite; transform-origin: 195px 175px; }
-#motorSymbol.reverse .motor-letter { animation: hbSpinRev .7s linear infinite; transform-origin: 195px 175px; }
+#motorSymbol.forward .motor-spin { animation: hbSpinFw .7s linear infinite; }
+#motorSymbol.reverse .motor-spin { animation: hbSpinRev .7s linear infinite; }
 #motorSymbol.brake .motor-body { stroke: var(--yellow); }
 #batterySymbol.short .bat-plate { stroke: #ff8a1f; filter: drop-shadow(0 0 10px #ff6a00); }
 #batterySymbol.short .battery-flames { display: block; }
@@ -314,7 +315,31 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
 .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
 .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
 .card-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
-.split-lab { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; }
+.split-lab { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px; align-items: start; }
+.hint-lesson {
+  padding: 24px;
+  border: 1px solid rgba(255, 209, 102, .55);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, rgba(255, 209, 102, .12), rgba(255, 74, 196, .06));
+  box-shadow: var(--shadow), 0 0 36px rgba(255, 209, 102, .16);
+}
+.hint-lesson .eyebrow { color: var(--yellow); }
+.hint-photo {
+  border-radius: 22px; overflow: hidden; min-height: 280px;
+  background: rgba(255,255,255,.06);
+}
+.hint-photo img {
+  width: 100%; min-height: 320px; max-height: 460px; object-fit: contain; display: block;
+  background: #1a1408;
+}
+.wiring-photo-card {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: rgba(255,255,255,.07); overflow: hidden; min-height: 280px;
+}
+.wiring-photo-card img {
+  width: 100%; min-height: 320px; max-height: 460px; object-fit: contain; display: block;
+  background: #0b1228;
+}
 .info-card, .facilitator-card, .symbol-card, .step-tile, .pcb-card {
   padding: 22px; border: 1px solid var(--line); border-radius: 24px;
   background: rgba(255,255,255,.07); position: relative; overflow: hidden;
@@ -339,6 +364,8 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
   border-radius: 18px; background: #f4f6fb; border: 1px solid var(--line);
 }
 .real-vs-diagram figcaption { margin-top: 8px; color: var(--muted); font-weight: 800; font-size: .88rem; }
+.lesson-section .bb-compare { grid-column: 1 / -1; margin-top: 8px; }
+.bb-compare img { height: min(320px, 46vw); }
 .facilitator-card { text-align: center; }
 .facilitator-card .role { color: var(--cyan); font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; }
 .facilitator-scroller {
@@ -429,6 +456,11 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
 .day-chip { padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid var(--line); color: #fff; font-weight: 800; font-size: .88rem; }
 
 .symbol-card { text-align: center; cursor: default; }
+.symbol-photo {
+  width: 100%; height: 112px; object-fit: contain; display: block;
+  margin: 0 auto 12px; padding: 8px; border-radius: 16px;
+  background: #fff; border: 1px solid var(--line);
+}
 .symbol-card svg { width: 88px; height: 64px; display: block; margin: 0 auto 10px; }
 .symbol-card .tag { color: var(--cyan); font-size: .78rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
 
@@ -532,12 +564,11 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
 .bb-legend .cyan { background: var(--cyan); } .bb-legend .gold { background: var(--yellow); }
 
 .pcb-visual {
-  min-height: 220px; border-radius: 22px; position: relative; overflow: hidden;
-  background: linear-gradient(145deg, #0d6b46, #084830);
-  border: 1px solid rgba(255,255,255,.16);
+  margin: 0; min-height: 220px; border-radius: 22px; overflow: hidden;
+  background: #07120c; border: 1px solid rgba(255,255,255,.16);
 }
-.pcb-trace { position: absolute; height: 8px; border-radius: 99px; background: #d4a54f; box-shadow: 0 0 10px rgba(212,165,79,.4); }
-.pcb-pad { position: absolute; width: 18px; height: 18px; border-radius: 50%; background: #e7c36a; }
+.pcb-visual img { width: 100%; height: 100%; min-height: 280px; object-fit: contain; display: block; background: #07120c; }
+.pcb-visual figcaption { padding: 10px 14px 14px; color: var(--muted); font-weight: 800; font-size: .9rem; }
 
 .pin-quiz { display: grid; gap: 12px; }
 .pin-row-q { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; align-items: center; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.06); }
@@ -547,6 +578,23 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
 .code-editor header { padding: 12px 16px; border-bottom: 1px solid var(--line); color: var(--muted); font-weight: 800; }
 .code-editor pre { margin: 0; padding: 18px; overflow: auto; color: #d6e6ff; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .92rem; line-height: 1.7; }
 .code-editor .kw { color: #ff7ad9; } .code-editor .fn { color: #7ee0ff; } .code-editor .num { color: #ffd166; } .code-editor .cm { color: #7f8fb5; }
+.syntax-line {
+  margin: 0 0 16px; padding: 16px 18px; border-radius: 16px;
+  background: #0b1228; border: 1px solid var(--line);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(1rem, 2.4vw, 1.25rem); font-weight: 800; color: #d6e6ff;
+}
+.syntax-line .kw { color: #ff7ad9; }
+.syntax-line .fn { color: #7ee0ff; }
+.syntax-line .num { color: #ffd166; }
+.syntax-parts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.syntax-parts article { padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.06); }
+.syntax-parts strong { color: #fff; }
+.syntax-parts p { margin: 6px 0 0; }
+.lesson-copy code {
+  padding: 2px 7px; border-radius: 8px; background: rgba(255,255,255,.1);
+  color: #fff; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 
 .wifi-phone {
   min-height: 280px; border-radius: 32px; padding: 18px; background: #10182f; border: 3px solid rgba(255,255,255,.2);
@@ -555,6 +603,16 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
 .wifi-phone .notch { width: 86px; height: 10px; border-radius: 99px; background: #000; margin: 0 auto 14px; }
 .wifi-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,.07); margin-bottom: 8px; }
 .wifi-row.active { background: rgba(57,229,140,.16); border: 1px solid rgba(57,229,140,.4); }
+.wifi-step-photo {
+  border-radius: 22px; overflow: hidden; background: #0b1228;
+}
+.wifi-step-photo img {
+  width: 100%; max-height: 460px; object-fit: contain; display: block;
+}
+.step-body p { margin: 0 0 12px; }
+.step-body p:last-child { margin-bottom: 0; }
+.build-steps { margin: 0; padding-left: 1.2rem; color: var(--muted); line-height: 1.75; }
+.build-steps li { margin: 10px 0; }
 
 .build-stage { min-height: 260px; border-radius: 24px; padding: 20px; background: rgba(6,12,31,.5); display: grid; place-items: center; }
 .mini-car { width: 210px; height: 120px; position: relative; }
@@ -820,7 +878,7 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
   .timeline { grid-template-columns: repeat(2, 1fr); }
   .worksheet-preview { position: static; max-height: none; }
   .slide-preview-wrap { position: static; }
-  .pin-row-q { grid-template-columns: 1fr; }
+  .pin-row-q, .syntax-parts { grid-template-columns: 1fr; }
   .facilitator-scroller { grid-auto-columns: calc((100% - 16px) / 2); }
 }
 @media (max-width: 680px) {

@@ -550,8 +550,14 @@ function initStepper(rootId, steps, extra) {
     const step = steps[index];
     if (now) now.textContent = String(index + 1);
     if (title) title.textContent = step.title;
-    if (text) text.textContent = step.text;
-    if (why) why.textContent = step.why;
+    if (text) {
+      if (step.html) text.innerHTML = step.html;
+      else text.textContent = step.text || '';
+    }
+    if (why) {
+      why.textContent = step.why || '';
+      why.hidden = !step.why;
+    }
     extra?.(step, index);
   };
 
@@ -569,49 +575,114 @@ function initStepper(rootId, steps, extra) {
 function initWifiStepper() {
   const phonePane = $('#wifiPhonePane');
   const photoPane = $('#wifiPhotoPane');
-  const photoHint = $('#wifiPhotoHint');
+  const photo = $('#wifiStepPhoto');
   const photoTitle = $('#wifiPhotoTitle');
   initStepper('wifiStepper', [
     { title: 'ESP32 becomes a mini Wi-Fi shop', text: 'Your board starts a local access point. It is a tiny network that only exists around your car.', why: 'No school Wi-Fi needed. Phone talks straight to the car.' },
-    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look for a name like ELECTRO-Car-07. Each car can have its own name.', why: 'If two cars share one name, phones can get confused.', photo: 'Drop step 2 photo: Wi-Fi settings' },
-    { title: 'Join the car network', text: 'Tap the car Wi-Fi and connect. Your phone may say “no internet”. That is normal.', why: 'This network is only for control, not YouTube.', photo: 'Drop step 3 photo: joining ELECTRO-Car-07' },
-    { title: 'Open the control website', text: 'In the phone browser, open the address the facilitators give you. You should see drive buttons.', why: 'The ESP32 is also a tiny web server.', photo: 'Drop step 4 photo: control website' },
-    { title: 'Test drive', text: 'Tap forward, reverse, and stop. If the wheels move, your code and Wi-Fi both work.', why: 'Fix problems now, before the race track gets busy.', photo: 'Drop step 5 photo: test drive' }
+    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look under Available networks for a name like ELECTRO-Car-15. Your number may be different.', why: 'If two cars share one name, phones can get confused.', image: 'assets/programming/wifi-step-2.jpg', alt: 'Phone Wi-Fi list with ELECTRO-Car-15 under available networks' },
+    { title: 'Join the car network', text: 'Tap the car Wi-Fi and connect. Your phone may say “No internet”. That is normal. Stay on that network.', why: 'This network is only for control, not YouTube.', image: 'assets/programming/wifi-step-3.jpg', alt: 'Phone connected to ELECTRO-Car-15 with no internet' },
+    { title: 'Open the control website', text: 'In the phone browser, type 192.168.4.1. You should see ESP32 Arrow Control with the four arrows and speed sliders.', why: 'The ESP32 is also a tiny web server.', image: 'assets/programming/wifi-step-4.jpg', alt: 'Phone browser open at 192.168.4.1 showing ESP32 Arrow Control, Active NONE' },
+    { title: 'Test drive', text: 'Hold an arrow. Active should change, like UP. If the wheels move, your code and Wi-Fi both work. Let go to stop.', why: 'Fix problems now, before the race track gets busy.', image: 'assets/programming/wifi-step-5.jpg', alt: 'ESP32 Arrow Control with the up button green and Active UP' }
   ], (step, index) => {
     const showPhone = index === 0;
     phonePane?.classList.toggle('hidden', !showPhone);
     photoPane?.classList.toggle('hidden', showPhone);
-    if (showPhone) {
-      $$('.wifi-row').forEach(row => row.classList.toggle('active', row.textContent.includes('ELECTRO-Car-07')));
-    } else if (photoHint) {
-      photoHint.textContent = step.photo || 'Drop photo here';
-      if (photoTitle) photoTitle.textContent = `Step ${index + 1} photo`;
+    if (photoTitle) photoTitle.textContent = `Step ${index + 1}`;
+    if (!showPhone && photo && step.image) {
+      photo.src = step.image;
+      photo.alt = step.alt || '';
     }
   });
 }
 
 function initAssemblyStepper() {
+  const photo = $('#assemblyStepPhoto');
+  const photoWrap = $('#assemblyPhotoWrap');
   const photoHint = $('#assemblyPhotoHint');
   const photoTitle = $('#assemblyPhotoTitle');
   initStepper('assemblyStepper', [
-    { title: 'Fit the motors', text: 'Clip or screw both motors onto the chassis so the wheels sit straight.', why: 'Crooked motors make the car drift.', photo: 'Drop step 1 photo: motors on the chassis' },
-    { title: 'Mount the PCB and ESP32', text: 'Seat the printed circuit board and ESP32 so they cannot rattle loose.', why: 'A bouncing board can unplug wires mid-race.', photo: 'Drop step 2 photo: PCB and ESP32 seated' },
-    { title: 'Connect power and motors', text: 'Use the same PCB-to-motor and power wiring from the H-bridge lesson.', why: 'Wrong polarity can stop the car or stress the board.', photo: 'Drop step 3 photo: power and motor wiring' },
-    { title: 'Mark your car', text: 'Add a sticker, colour, or name. Every student has the same kit, so make yours obvious.', why: 'No mix-ups when 28 cars hit the table.', photo: 'Drop step 4 photo: marked / decorated car' },
-    { title: 'Gentle test run', text: 'Drive in the enclosed area only. No drops, no crashes into walls for fun.', why: 'You take this car home. Keep it in one piece.', photo: 'Drop step 5 photo: enclosed test run' }
+    {
+      title: 'Orient the motor',
+      html: '<p>Orient the motor such that the wire side faces you and pull the wire under the motor. Make sure the wires coming out are on the same side as the small circle on the side of the motor (circled).</p>',
+      image: 'assets/assembly/step-1.jpg',
+      alt: 'Motor with wires pulled under, small circle on the same side as the wires'
+    },
+    {
+      title: 'Seat the motor',
+      html: '<ol class="build-steps"><li>Thread both red and black wires through the hole on the side of the motor.</li><li>Ensure that the small circle is facing the outer wall. <strong>DO NOT try to insert the motor where the inner circle is facing the inner wall. ESPECIALLY NOT BY FORCE! You may damage the motor and chassis.</strong> The motor axle will slide into the circular hole from the top. If you inserted it according to the orientation in step 1, the motor should fit in easily.</li><li>For best results, push the small rubber cube into the slot such that it presses against the outer wall, holding it securely in the slot.</li></ol>',
+      image: 'assets/assembly/step-2.jpg',
+      alt: 'Motor seated in the chassis with wires through the side hole, peg on the outer wall, and rubber cube in the slot'
+    },
+    {
+      title: 'Fit the ball bearing',
+      html: '<p>Flip the chassis over, and align the holes of the ball bearing with the holes on the chassis. Use the cross-head screwdriver to screw the black screws through both the ball bearing and chassis.</p>',
+      image: 'assets/assembly/step-3.jpg',
+      alt: 'Ball caster being screwed to the underside of the chassis'
+    },
+    {
+      title: 'Wheels and lid',
+      html: '<p>Attach the wheels onto the motors, and the lid on the chassis. Align the holes on the lid to the extensions on the chassis, while ensuring the small compartment on the lid is above the motors. The side with the motors is the front of the car.</p>',
+      image: 'assets/assembly/step-4.jpg',
+      alt: 'Chassis with both motors and wheels fitted at the front'
+    },
+    {
+      title: 'Insert the ESP32',
+      html: '<p>Insert the ESP32 into the slot. <strong>ENSURE THAT THE PINS ARE INSERTED CORRECTLY. Match the pin names on the PCB with the ESP32. IF INSERTED WRONGLY, THE ESP32 COULD POTENTIALLY BURN!</strong> Make sure the connection is correct before connecting the battery.</p>',
+      image: 'assets/assembly/step-5.jpg',
+      alt: 'ESP32 being aligned so D22 and D23 match the labels on the PCB'
+    },
+    {
+      title: 'Place PCB and battery',
+      html: '<p>Place the PCB in the larger compartment <strong>with the screw terminals facing the middle of the car</strong>. Place the battery holder with batteries inside in the smaller compartment.</p>'
+    },
+    {
+      title: 'Connect motors and power',
+      html: '<p>Connect the batteries and motor wires into the PCB as before. Ensure that you connect the correct side of motor to the label on the PCB. (e.g. LM label is for the left motor, RM labels is for the right motor).</p>'
+    }
   ], (step, index) => {
-    if (photoHint) photoHint.textContent = step.photo || 'Drop photo here';
-    if (photoTitle) photoTitle.textContent = `Step ${index + 1} photo`;
+    if (photoTitle) photoTitle.textContent = `Step ${index + 1}`;
+    const hasPhoto = Boolean(step.image);
+    photoWrap?.classList.toggle('hidden', !hasPhoto);
+    photoHint?.classList.toggle('hidden', hasPhoto);
+    if (hasPhoto && photo) {
+      photo.src = step.image;
+      photo.alt = step.alt || '';
+    }
   });
 }
 
 function initConnectionStepper() {
+  const photo = $('#connectStepPhoto');
   initStepper('connectStepper', [
-    { title: 'Find the motor pads', text: 'On your provided PCB, locate the two motor outputs. These come from the H-bridge.', why: 'The PCB is the tidy version of the breadboard circuit you just built.' },
-    { title: 'Wire motor + and −', text: 'Connect the motor leads to the PCB motor pads. Keep red and black consistent.', why: 'Swapping these later just reverses “forward”, which is easy to fix in code.' },
-    { title: 'Connect the battery', text: 'Join the battery pack to the PCB power input. Check the voltage range the facilitators give you.', why: 'Motors need a real battery. Do not try to power them from a laptop USB only.' },
-    { title: 'Double-check before power', text: 'Look for loose strands, backwards battery clips, and wires that could short.', why: 'Thirty seconds of checking beats a dead kit.' }
-  ]);
+    {
+      title: 'Find the motor outputs',
+      text: 'On your provided PCB, locate the four motor outputs. These come from the H-bridge. The text below the screw hole describes which terminal and side of motor to connect. RM- stands for Right Motor −, likewise LM+ stands for Left Motor +.',
+      image: 'assets/h-bridge/step-1.jpg',
+      alt: 'Custom PCB with the four motor screw terminals circled'
+    },
+    {
+      title: 'Wire the motors',
+      text: 'Connect the motor leads to the PCB motor pads according to the text below the screw hole. The left or right side do not matter yet, just ensure the negative and positive terminals are connected correctly. Tighten the screw hole with the wire in it using a cross-head screwdriver.',
+      image: 'assets/h-bridge/step-2.jpg',
+      alt: 'Tightening a motor wire into a PCB screw terminal'
+    },
+    {
+      title: 'Connect the battery',
+      text: 'Join the battery pack to the PCB power input. Ensure that the loose strands of metal from the red and black wires are NOT TOUCHING. When the battery is connected securely, the white LED will light up brightly.',
+      image: 'assets/h-bridge/step-3.jpg',
+      alt: 'Battery pack wired to Vin and GND with the white power LED on'
+    },
+    {
+      title: 'Check for shorts',
+      text: 'Look for loose strands, backwards battery clips, and wires that could short. Pull on the wires lightly to ensure they are tightly in the screw hole.',
+      image: 'assets/h-bridge/step-4.jpg',
+      alt: 'Dangerous loose copper strands at the power terminals'
+    }
+  ], step => {
+    if (!photo || !step.image) return;
+    photo.src = step.image;
+    photo.alt = step.alt || '';
+  });
 }
 
 const quizzes = {
@@ -646,9 +717,9 @@ const quizzes = {
       title: 'Checkpoint · Motor code + Wi-Fi',
       tag: 'After applyDirection and the access point',
       questions: [
-        { id: 'p1', type: 'mcq', prompt: 'In applyDirection, which pair should be HIGH / LOW to drive forwards (same wiring as the lesson)?', options: ['INA LOW, INB LOW', 'INA HIGH, INB LOW', 'INA LOW, INB HIGH', 'INA HIGH, INB HIGH'], correct: 1, hint: 'Match the H-bridge truth table.', answer: 'INA HIGH and INB LOW for forward.' },
+        { id: 'p1', type: 'mcq', prompt: 'What does digitalWrite(AIN2, HIGH) do?', options: ['Reads the value on pin AIN2', 'Sets pin AIN2 to HIGH', 'Sets every motor pin to HIGH', 'Checks if d == UP'], correct: 1, hint: 'Write means set. Digital means HIGH or LOW.', answer: 'It writes HIGH onto pin AIN2.' },
         { id: 'p2', type: 'mcq', prompt: 'Your phone says “Connected, no internet” on the car Wi-Fi. What should you do?', options: ['Throw the ESP32 away', 'That is normal. Open the control website anyway.', 'The car is broken', 'Connect to school Wi-Fi instead'], correct: 1, hint: 'Local access point.', answer: 'The ESP32 network is local only. No internet is expected.' },
-        { id: 'p3', type: 'text', prompt: 'Name the two things you must test before lunch: the motor pins and the…', keywords: ['wifi', 'wi-fi', 'wi fi'], hint: 'Phone + access point.', answer: 'Wi-Fi / the phone control link.' }
+        { id: 'p3', type: 'text', prompt: 'Name the two things you must test before you build the chassis: the motor pins and the…', keywords: ['wifi', 'wi-fi', 'wi fi'], hint: 'Phone + access point.', answer: 'Wi-Fi / the phone control link.' }
       ]
     }
   ]

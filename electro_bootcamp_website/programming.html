@@ -27,55 +27,163 @@
     <div class="hero-copy reveal">
       <p class="eyebrow">Section 3.0 · After lunch</p>
       <h1>Code the driver, then <span>go wireless</span></h1>
-      <p class="hero-lead">The H-bridge only listens to two pins: INA and INB. Your job in Arduino IDE is to set those pins HIGH or LOW for each direction. Then the ESP32 opens a local Wi-Fi shop so your phone can send the commands.</p>
+      <p class="hero-lead">You will write applyDirection with two tools: digitalWrite and if statements. Those commands set four named pins — AIN1, AIN2, BIN1, BIN2 — so the car can go UP, DOWN, LEFT, or RIGHT. Then the ESP32 opens a local Wi-Fi shop so your phone can send the commands.</p>
     </div>
   </header>
 
   <main>
-    <section class="lesson-section reveal" id="motor-code">
+    <section class="lesson-section reveal" id="esp32">
       <div class="lesson-copy">
-        <p class="eyebrow">3.1 Motor driver code</p>
-        <h2>Write applyDirection</h2>
-        <p>You will fill in a function that takes a direction and writes the two pins. Use the same truth table from the H-bridge desk. Facilitators will tell you which ESP32 pins are INA and INB on your PCB.</p>
-        <div class="callout">Test yourself: “If I want reverse, which pin is HIGH?” If you can answer without peeking, you are ready to type.</div>
+        <p class="eyebrow">3.1 Meet the ESP32</p>
+        <h2>A tiny computer with Wi-Fi</h2>
+        <p>The black board on your car is an <strong>ESP32</strong>. Think of it as a pocket-sized computer. It reads your code, then turns pins on and off so the motors move.</p>
+        <p>If you have used an <strong>Arduino</strong> before, this will feel familiar. Both have labelled pins. Both run a program you upload. Both can blink an LED or drive a motor.</p>
+        <p>The big extra on the ESP32 is built-in Wi-Fi. A classic Arduino usually needs an extra add-on for that. Your ESP32 can open its own tiny hotspot so a phone can talk to the car.</p>
+        <div class="callout">You program it in the <strong>Arduino IDE</strong> — the same app many of you already used. That is why digitalWrite looks like Arduino code.</div>
       </div>
       <div class="interactive-card">
-        <div class="code-editor" aria-label="Sample applyDirection function">
-          <header>Arduino IDE · applyDirection.ino</header>
-          <pre><span class="cm">// dir: 0 = stop, 1 = forward, 2 = reverse</span>
-<span class="kw">void</span> <span class="fn">applyDirection</span>(<span class="kw">int</span> dir) {
-  <span class="kw">if</span> (dir == <span class="num">1</span>) {
-    <span class="fn">digitalWrite</span>(INA, HIGH);
-    <span class="fn">digitalWrite</span>(INB, LOW);
-  } <span class="kw">else if</span> (dir == <span class="num">2</span>) {
-    <span class="fn">digitalWrite</span>(INA, LOW);
-    <span class="fn">digitalWrite</span>(INB, HIGH);
-  } <span class="kw">else</span> {
-    <span class="fn">digitalWrite</span>(INA, LOW);
-    <span class="fn">digitalWrite</span>(INB, LOW);
-  }
+        <h3>Your board</h3>
+        <div class="wifi-step-photo">
+          <img src="assets/programming/esp32.png" alt="ESP32 development board with USB port, EN and BOOT buttons, pin labels, and a silver Wi-Fi module" />
+        </div>
+        <div class="syntax-parts" style="margin-top:14px">
+          <article><strong>Like Arduino</strong><p>Pins, USB upload, Arduino IDE.</p></article>
+          <article><strong>Plus Wi-Fi</strong><p>The silver shield is the radio. No extra Wi-Fi board needed.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal" id="digital-write">
+      <div class="lesson-copy">
+        <p class="eyebrow">3.2 Tool 1 · digitalWrite</p>
+        <h2>Tell a pin HIGH or LOW</h2>
+        <p>If you have used Arduino before, this line will look familiar. It is how the ESP32 turns a motor pin on or off. Digital means the pin can only be one of two values: HIGH or LOW. Write means you are setting that value, not reading it.</p>
+        <div class="callout">The correct pins are already named for you: <strong>AIN1</strong>, <strong>AIN2</strong>, <strong>BIN1</strong>, and <strong>BIN2</strong>. You type the name, not a raw number.</div>
+      </div>
+      <div class="interactive-card">
+        <h3>Syntax</h3>
+        <p class="syntax-line"><span class="fn">digitalWrite</span>(<span class="kw">pin</span>, <span class="num">value</span>);</p>
+        <div class="syntax-parts">
+          <article><strong>digital</strong><p>Only two states: HIGH or LOW. No in-between.</p></article>
+          <article><strong>Write</strong><p>You are setting the pin, like flipping a switch.</p></article>
+          <article><strong>pin</strong><p>Which pin? Today that is AIN1, AIN2, BIN1, or BIN2.</p></article>
+          <article><strong>value</strong><p>HIGH (on / 1) or LOW (off / 0).</p></article>
+        </div>
+        <div class="code-editor" style="margin-top:16px" aria-label="digitalWrite examples">
+          <header>Examples</header>
+          <pre><span class="fn">digitalWrite</span>(<span class="num">4</span>, HIGH);     <span class="cm">// pin 4 becomes HIGH</span>
+<span class="fn">digitalWrite</span>(<span class="num">4</span>, LOW);      <span class="cm">// pin 4 becomes LOW</span>
+<span class="fn">digitalWrite</span>(AIN2, HIGH);  <span class="cm">// named pin AIN2 becomes HIGH</span>
+<span class="fn">digitalWrite</span>(BIN1, LOW);   <span class="cm">// named pin BIN1 becomes LOW</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal alt" id="if-statement">
+      <div class="interactive-card">
+        <h3>Syntax</h3>
+        <div class="code-editor" aria-label="if statement syntax">
+          <header>if / else if / else</header>
+          <pre><span class="kw">if</span> (condition) {
+  <span class="cm">// run this when the condition is true</span>
+} <span class="kw">else if</span> (otherCondition) {
+  <span class="cm">// run this when the first was false, but this is true</span>
+} <span class="kw">else</span> {
+  <span class="cm">// run this when none of the above were true</span>
 }</pre>
         </div>
-        <p class="hint" style="margin-top:14px">Live pin line: <strong id="codeHighlight">digitalWrite(INA, LOW);   digitalWrite(INB, LOW);</strong></p>
-        <div class="toggle-row" role="group" aria-label="Try the pins">
-          <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">INA: Low</button>
-          <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">INB: Low</button>
+        <p class="hint" style="margin-top:14px">In applyDirection the condition looks like <strong>d == UP</strong>, <strong>d == DOWN</strong>, <strong>d == LEFT</strong>, or <strong>d == RIGHT</strong>.</p>
+      </div>
+      <div class="lesson-copy">
+        <p class="eyebrow">3.3 Tool 2 · if statements</p>
+        <h2>Choose what happens next</h2>
+        <p>A conditional is a fork in the road. The program checks a question, then picks one path.</p>
+        <p>Real life: if it is raining, take an umbrella. Else if it is sunny, take sunglasses. Else, just go.</p>
+        <p>In code, <code>==</code> means “is equal to”. Your function receives a direction <strong>d</strong>. You ask: is d UP? Then write the UP pins. Is it DOWN? Write the DOWN pins. Same for LEFT and RIGHT. If it is none of those, stop both motors.</p>
+        <div class="callout">Only one of those blocks runs. The first true condition wins, then the rest are skipped.</div>
+      </div>
+    </section>
+
+    <section class="lesson-section reveal" id="motor-code">
+      <div class="lesson-copy">
+        <p class="eyebrow">3.4 Motor driver code</p>
+        <h2>Write applyDirection</h2>
+        <p>Now put both tools together. The top line is already written. Start after the comment. Do not edit the code above or below the comments.</p>
+        <div class="callout"><strong>This is not the correct answer.</strong> It is only a starter template. Copy the pattern, then keep going for LEFT, RIGHT, and stop. Test on your car and change HIGH / LOW until each move is right.</div>
+        <div class="control-row" style="margin-top:16px">
+          <a class="button primary" href="downloads/electro_bootcamp.zip" download="electro_bootcamp.zip">Download Arduino code</a>
         </div>
-        <div id="motorState" class="motor-state coast">Coast</div>
+        <p>Unzip the folder. Open <code>electro_bootcamp.ino</code> in the Arduino IDE. Write your directions in <code>apply_direction.h</code>, then upload to the ESP32.</p>
+      </div>
+      <div class="interactive-card">
+        <div class="code-editor" aria-label="applyDirection starter template">
+          <header>Arduino IDE · starter template</header>
+          <pre><span class="kw">void</span> <span class="fn">applyDirection</span>(Dir d) {
+  currentDir = d;
+  <span class="cm">//Start writing code here, DO NOT edit the above code!</span>
+  <span class="kw">if</span> (d == UP) {
+    <span class="fn">digitalWrite</span>(AIN1, HIGH);
+    <span class="fn">digitalWrite</span>(AIN2, LOW);
+    <span class="fn">digitalWrite</span>(BIN1, HIGH);
+    <span class="fn">digitalWrite</span>(BIN2, LOW);
+  } <span class="kw">else if</span> (d == DOWN) {
+    <span class="fn">digitalWrite</span>(AIN1, LOW);
+    <span class="fn">digitalWrite</span>(AIN2, HIGH);
+    <span class="fn">digitalWrite</span>(BIN1, LOW);
+    <span class="fn">digitalWrite</span>(BIN2, HIGH);
+  } <span class="kw">else if</span>...
+  <span class="cm">// keep going: LEFT, RIGHT, and an else to stop</span>
+  <span class="cm">//DO NOT edit past this point!</span>
+}</pre>
+        </div>
       </div>
     </section>
 
     <section class="panel reveal" id="pin-test">
       <div class="section-heading compact">
-        <p class="eyebrow">Pin check</p>
-        <h2>HIGH or LOW for each move?</h2>
-        <p>Based on the connections you just made, lock this table in your memory. The quiz at the bottom will ask the same thing in different words.</p>
+        <p class="eyebrow">3.5 Your job</p>
+        <h2>Write every case, then test</h2>
+        <p>Finish UP, DOWN, LEFT, RIGHT, and the else stop block first. Then upload and try the buttons. AIN pins drive one side. BIN pins drive the other. The sample HIGH / LOW values above are only a pattern — they may not match your car.</p>
       </div>
-      <div class="pin-quiz">
-        <div class="pin-row-q"><strong>Forward</strong><span>INA HIGH</span><span>INB LOW</span></div>
-        <div class="pin-row-q"><strong>Reverse</strong><span>INA LOW</span><span>INB HIGH</span></div>
-        <div class="pin-row-q"><strong>Stop / coast</strong><span>INA LOW</span><span>INB LOW</span></div>
-        <div class="pin-row-q"><strong>Brake</strong><span>INA HIGH</span><span>INB HIGH</span></div>
+      <div class="pin-quiz pin-quiz-wide">
+        <div class="pin-row-q"><strong>UP</strong><span>Started in the template</span><span>Write the rest before you test</span></div>
+        <div class="pin-row-q"><strong>DOWN</strong><span>Started in the template</span><span>Write the rest before you test</span></div>
+        <div class="pin-row-q"><strong>LEFT</strong><span>You write this else if</span><span>AIN1, AIN2, BIN1, BIN2</span></div>
+        <div class="pin-row-q"><strong>RIGHT</strong><span>You write this else if</span><span>AIN1, AIN2, BIN1, BIN2</span></div>
+        <div class="pin-row-q"><strong>NONE / stop</strong><span>You write the else</span><span>Both sides should stop</span></div>
+      </div>
+      <div class="callout" style="margin-top:18px">
+        <strong>The pins remember the last command.</strong>
+        If you skip a direction, pressing that button does not change the motors. The car keeps doing the previous move. Example: you press DOWN, then LEFT — but LEFT was never written, so it still goes down.
+        The else stop block is extra important. When you let go, the website sends NONE. No else means nothing new is written, so the car keeps driving after you take your finger off.
+      </div>
+    </section>
+
+    <section class="lesson-section hint-lesson reveal" id="hint-turn">
+      <div class="hint-photo">
+        <img src="assets/programming/turn-hint.jpg" alt="Top view of the car chassis. A curved arrow over the front wheels shows the car rotating so the nose turns." />
+      </div>
+      <div class="lesson-copy">
+        <p class="eyebrow">Hint 1 · Left and right</p>
+        <h2>Imagine how the whole car rotates</h2>
+        <p>Forward and backward are the straightforward ones: both wheels travel the same way, so the car slides straight.</p>
+        <p>Turning is different. Picture the front of the car. Which way must the whole car spin so that nose goes left or right?</p>
+        <p>Right means the car rotates <strong>clockwise</strong>, like a clock hand. Left is the other way, <strong>counter-clockwise</strong>. Look at the photo: the arrow is that spin, not a straight slide.</p>
+        <div class="callout">Stuck on which wheel should go forward or back? Ask a facilitator. Do not guess and upload forever.</div>
+      </div>
+    </section>
+
+    <section class="lesson-section hint-lesson reveal alt" id="hint-mirror">
+      <div class="lesson-copy">
+        <p class="eyebrow">Hint 2 · Mirrored motors</p>
+        <h2>Same car move, opposite motor spin</h2>
+        <p>Going forward or backward does <strong>not</strong> mean both motors spin the same way.</p>
+        <p>The left and right motors face each other. They are mirrored across the middle of the car. If you give both the same voltage sign, one wheel goes forward and the other goes backward.</p>
+        <p>Try this with your hand: point a finger away from you and twist it clockwise. Keep twisting, then slowly turn your hand until that finger points toward you. The same twist now looks counter-clockwise. That is why the two sides need opposite spin to move the car straight.</p>
+        <div class="callout">If forward makes the car spin in place, you found the mirror. Ask a facilitator to check your HIGH / LOW pairs with you.</div>
+      </div>
+      <div class="hint-photo">
+        <img src="assets/programming/mirrored-motors.jpg" alt="Two yellow gear motors facing opposite ways, with arrows showing they must spin in opposite directions to move the car straight." />
       </div>
     </section>
 
@@ -86,18 +194,20 @@
           <div class="wifi-phone" aria-label="Phone Wi-Fi list">
             <div class="notch"></div>
             <div class="wifi-row"><span>Sri KDU-Student</span><span>🔒</span></div>
-            <div class="wifi-row active"><span>ELECTRO-Car-07</span><span>📡 local</span></div>
+            <div class="wifi-row active"><span>ELECTRO-Car-15</span><span>📡 local</span></div>
             <div class="wifi-row"><span>Canteen_Free</span><span>🔒</span></div>
-            <p class="feedback success" style="margin-top:12px">Connected to ELECTRO-Car-07 · No internet (expected)</p>
+            <p class="feedback success" style="margin-top:12px">Connected to ELECTRO-Car-15 · No internet (expected)</p>
           </div>
         </div>
         <div id="wifiPhotoPane" class="hidden">
           <h3 id="wifiPhotoTitle">Step photo</h3>
-          <div class="photo-slot wide" style="min-height:260px;aspect-ratio:auto"><span id="wifiPhotoHint">Drop photo here</span></div>
+          <div class="wifi-step-photo">
+            <img id="wifiStepPhoto" src="assets/programming/wifi-step-2.jpg" alt="Phone Wi-Fi list with ELECTRO-Car-15 in available networks" />
+          </div>
         </div>
       </div>
       <div class="lesson-copy" id="wifiStepper">
-        <p class="eyebrow">3.2 Wi-Fi connection</p>
+        <p class="eyebrow">3.6 Wi-Fi connection</p>
         <h2>The ESP32 is a tiny hotspot</h2>
         <div class="step-count"><span data-step-now>1</span>/<span data-step-total>5</span></div>
         <h3 data-step-title>ESP32 becomes a mini Wi-Fi shop</h3>
@@ -107,13 +217,13 @@
           <button class="button small ghost" type="button" data-step-prev>← Back</button>
           <button class="button small ghost" type="button" data-step-next>Next →</button>
         </div>
-        <div class="callout">Bring a phone. After you join the car network, open the control website the facilitators write on the board. Then test-run before you touch the chassis.</div>
+        <div class="callout">Bring a phone. After you join the car network, open <strong>192.168.4.1</strong> in the browser. Then test-run before you touch the chassis.</div>
       </div>
     </section>
 
     <section class="panel reveal worksheet-panel" id="quiz">
       <div class="section-heading compact">
-        <p class="eyebrow">Checkpoint</p>
+        <p class="eyebrow">3.7 Checkpoint</p>
         <h2>Code + Wi-Fi check</h2>
         <p>If pins and Wi-Fi both work, the afternoon build is just mechanical. If they do not, fix it now.</p>
       </div>
