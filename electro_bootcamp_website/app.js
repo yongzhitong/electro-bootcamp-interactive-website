@@ -223,7 +223,7 @@ function initVoltageCurrent() {
   const charges = $('#vcCharges');
   if (!svg || !btn) return;
 
-  spawnCharges(charges, '#vcChargePath', 16, 3.2);
+  const chargeLoop = spawnCharges(charges, '#vcChargePath', 16, 3.2);
 
   const paint = connected => {
     svg.classList.toggle('vc-on', connected);
@@ -236,40 +236,62 @@ function initVoltageCurrent() {
         ? 'The battery pushes tiny charges out of the + side. That moving stream is current, and it lights the lamp.'
         : 'Unplug the battery and the push stops. The charges freeze, there is no current, and the lamp stays dark.';
     }
-    if (connected) svg.unpauseAnimations();
-    else svg.pauseAnimations();
+    if (connected) chargeLoop?.resume();
+    else chargeLoop?.pause();
   };
   btn.addEventListener('click', () => paint(!svg.classList.contains('vc-on')));
   paint(true);
 }
 
 function spawnCharges(group, pathId, count = 14, dur = 2.8) {
-  if (!group || group.childElementCount) return;
+  if (!group || group.dataset.charged === '1') return null;
+  const path = typeof pathId === 'string' ? document.querySelector(pathId) : pathId;
+  if (!path || typeof path.getTotalLength !== 'function') return null;
+  const length = path.getTotalLength();
+  if (!length) return null;
+
+  const dots = [];
   for (let i = 0; i < count; i++) {
+    const offset = i / count;
+    const pt = path.getPointAtLength(length * offset);
     const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     dot.setAttribute('r', i % 4 === 0 ? '4' : '3');
     dot.setAttribute('class', 'vc-charge');
-    const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
-    motion.setAttribute('dur', `${dur}s`);
-    motion.setAttribute('repeatCount', 'indefinite');
-    motion.setAttribute('begin', '0s');
-    motion.setAttribute('calcMode', 'linear');
-    const t = i / count;
-    if (t === 0) {
-      motion.setAttribute('keyPoints', '0;1');
-      motion.setAttribute('keyTimes', '0;1');
-    } else {
-      motion.setAttribute('keyPoints', `${t};1;0;${t}`);
-      motion.setAttribute('keyTimes', `0;${(1 - t).toFixed(4)};${(1 - t).toFixed(4)};1`);
-    }
-    const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
-    mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pathId);
-    mpath.setAttribute('href', pathId);
-    motion.appendChild(mpath);
-    dot.appendChild(motion);
+    dot.setAttribute('cx', String(pt.x));
+    dot.setAttribute('cy', String(pt.y));
     group.appendChild(dot);
-    try { motion.beginElement(); } catch (_) { /* animation starts from begin=0s */ }
+    dots.push({ el: dot, offset });
   }
+  group.dataset.charged = '1';
+
+  const loop = {
+    paused: false,
+    start: performance.now(),
+    pauseAt: 0,
+    pause() {
+      if (this.paused) return;
+      this.paused = true;
+      this.pauseAt = performance.now();
+    },
+    resume() {
+      if (!this.paused) return;
+      this.start += performance.now() - this.pauseAt;
+      this.paused = false;
+    },
+    tick(now) {
+      if (!this.paused) {
+        const t = ((now - this.start) / 1000 / dur) % 1;
+        for (let i = 0; i < dots.length; i++) {
+          const pt = path.getPointAtLength(((dots[i].offset + t) % 1) * length);
+          dots[i].el.setAttribute('cx', String(pt.x));
+          dots[i].el.setAttribute('cy', String(pt.y));
+        }
+      }
+      requestAnimationFrame(n => this.tick(n));
+    }
+  };
+  requestAnimationFrame(n => loop.tick(n));
+  return loop;
 }
 
 function initBatteryMotor() {
