@@ -609,7 +609,7 @@ function initAssemblyStepper() {
     },
     {
       title: 'Seat the motor',
-      html: '<ol class="build-steps"><li>Thread both red and black wires through the hole on the side of the motor.</li><li>Ensure that the small circle is facing the outer wall. <strong>DO NOT try to insert the motor where the inner circle is facing the inner wall. ESPECIALLY NOT BY FORCE! You may damage the motor and chassis.</strong> The motor axle will slide into the circular hole from the top. If you inserted it according to the orientation in step 1, the motor should fit in easily.</li><li>For best results, push the small rubber cube into the slot such that it presses against the outer wall, holding it securely in the slot.</li></ol>',
+      html: '<ol class="build-steps"><li>Thread both red and black wires through the hole on the side of the motor.</li><li>Ensure that the small circle is facing the outer wall. <strong>DO NOT try to insert the motor where the small circle is facing the inner wall. ESPECIALLY NOT BY FORCE! You may damage the motor or chassis.</strong> The motor axle will slide into the circular hole from the top. If you inserted it according to the orientation in step 1, the motor should fit in easily.</li><li>For best results, push the small rubber cube into the slot such that it presses against the outer wall, holding it securely in the slot.</li></ol>',
       image: 'assets/assembly/step-2.jpg',
       alt: 'Motor seated in the chassis with wires through the side hole, peg on the outer wall, and rubber cube in the slot'
     },
