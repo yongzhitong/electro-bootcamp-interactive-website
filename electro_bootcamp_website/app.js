@@ -223,25 +223,7 @@ function initVoltageCurrent() {
   const charges = $('#vcCharges');
   if (!svg || !btn) return;
 
-  if (charges && !charges.childElementCount) {
-    const count = 16;
-    const dur = 3.2;
-    for (let i = 0; i < count; i++) {
-      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      dot.setAttribute('r', i % 4 === 0 ? '4' : '3');
-      dot.setAttribute('class', 'vc-charge');
-      const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
-      motion.setAttribute('dur', `${dur}s`);
-      motion.setAttribute('repeatCount', 'indefinite');
-      motion.setAttribute('begin', `${(i * dur / count).toFixed(2)}s`);
-      const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
-      mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#vcChargePath');
-      mpath.setAttribute('href', '#vcChargePath');
-      motion.appendChild(mpath);
-      dot.appendChild(motion);
-      charges.appendChild(dot);
-    }
-  }
+  spawnCharges(charges, '#vcChargePath', 16, 3.2);
 
   const paint = connected => {
     svg.classList.toggle('vc-on', connected);
@@ -270,13 +252,23 @@ function spawnCharges(group, pathId, count = 14, dur = 2.8) {
     const motion = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
     motion.setAttribute('dur', `${dur}s`);
     motion.setAttribute('repeatCount', 'indefinite');
-    motion.setAttribute('begin', `${(i * dur / count).toFixed(2)}s`);
+    motion.setAttribute('begin', '0s');
+    motion.setAttribute('calcMode', 'linear');
+    const t = i / count;
+    if (t === 0) {
+      motion.setAttribute('keyPoints', '0;1');
+      motion.setAttribute('keyTimes', '0;1');
+    } else {
+      motion.setAttribute('keyPoints', `${t};1;0;${t}`);
+      motion.setAttribute('keyTimes', `0;${(1 - t).toFixed(4)};${(1 - t).toFixed(4)};1`);
+    }
     const mpath = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
     mpath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pathId);
     mpath.setAttribute('href', pathId);
     motion.appendChild(mpath);
     dot.appendChild(motion);
     group.appendChild(dot);
+    try { motion.beginElement(); } catch (_) { /* animation starts from begin=0s */ }
   }
 }
 
