@@ -78,7 +78,7 @@
         </article>
         <article class="symbol-card">
           <img class="symbol-photo" src="assets/components/resistor.png" alt="Real resistor with colour bands" />
-          <svg viewBox="0 0 88 64" aria-hidden="true"><path d="M8 32 H20 l6-10 8 20 8-20 8 20 8-20 6 10 H80" fill="none" stroke="#ffd166" stroke-width="3"/></svg>
+          <svg viewBox="0 0 88 64" aria-hidden="true"><line x1="8" y1="32" x2="22" y2="32" stroke="#28e8ff" stroke-width="3"/><rect x="22" y="22" width="44" height="20" fill="none" stroke="#28e8ff" stroke-width="3"/><line x1="66" y1="32" x2="80" y2="32" stroke="#28e8ff" stroke-width="3"/></svg>
           <p class="tag">Limit</p>
           <h3>Resistor</h3>
           <p>Slows current so an LED does not burn out.</p>
@@ -301,15 +301,20 @@
     <section class="lesson-section reveal" id="breadboard-howto">
       <div class="lesson-copy">
         <p class="eyebrow">1.5 How to use a breadboard</p>
-        <h2>Columns are already wired for you</h2>
-        <p>A breadboard lets you test a circuit without soldering. Under the plastic, metal clips join holes in the same column. Tap a hole to see the connected family.</p>
-        <div class="callout">Rule of thumb: parts that should touch go in the same column. Parts that should stay separate go in different columns.</div>
+        <h2>Columns and power rails</h2>
+        <p>A breadboard lets you test a circuit without soldering. The long red and blue edges are power rails — one strip for +, one for −. In the middle, metal clips join holes in the same column. The gap splits each column in two.</p>
+        <div class="callout">Battery + goes to a + rail. Circuit parts go in the middle columns. Parts that should touch share a column. The gap means top and bottom of a column are not joined.</div>
       </div>
       <div class="interactive-card">
         <h3>Tap a hole</h3>
-        <div id="breadboard" class="breadboard" aria-label="Interactive breadboard"></div>
-        <div class="bb-legend"><span><i class="cyan"></i>Same column = connected</span><span><i class="gold"></i>Same row, not connected</span></div>
-        <p id="bbHint" class="feedback">Tap any hole. Cyan marks the connected column. The line shows the hidden metal clip.</p>
+        <div id="breadboard" class="breadboard" aria-label="Interactive breadboard with power rails and circuit columns"></div>
+        <div class="bb-legend">
+          <span><i class="cyan"></i>Connected clip</span>
+          <span><i class="gold"></i>Same row, not connected</span>
+          <span><i class="red"></i>+ rail</span>
+          <span><i class="blue"></i>− rail</span>
+        </div>
+        <p id="bbHint" class="feedback">Tap a circuit hole to see a column. Tap + or − to see a whole power rail.</p>
       </div>
       <div class="real-vs-diagram bb-compare">
         <figure>

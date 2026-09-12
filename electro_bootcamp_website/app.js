@@ -347,52 +347,118 @@ function initBatteryMotor() {
 function initBreadboard() {
   const board = $('#breadboard');
   if (!board) return;
+  board.replaceChildren();
   const cols = 10;
-  const rows = 6;
-  const tracesWrap = document.createElement('div');
-  tracesWrap.className = 'bb-traces';
-  tracesWrap.setAttribute('aria-hidden', 'true');
-  const traces = [];
-  for (let c = 0; c < cols; c++) {
-    const trace = document.createElement('span');
-    trace.className = 'bb-trace';
-    trace.dataset.col = String(c);
-    tracesWrap.appendChild(trace);
-    traces.push(trace);
-  }
-  board.appendChild(tracesWrap);
+  const bankRows = 5;
+  const holes = [];
 
-  const cells = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const hole = document.createElement('button');
-      hole.type = 'button';
-      hole.className = 'bb-hole';
-      hole.dataset.row = String(r);
-      hole.dataset.col = String(c);
-      hole.setAttribute('aria-label', `Breadboard hole row ${r + 1} column ${c + 1}`);
-      board.appendChild(hole);
-      cells.push(hole);
-    }
-  }
-
-  const paint = (row, col) => {
-    cells.forEach(el => {
-      const sameCol = el.dataset.col === col;
-      const sameRow = el.dataset.row === row;
-      el.classList.toggle('linked', sameCol);
-      el.classList.toggle('same-row', sameRow && !sameCol);
+  const makeHole = (info, label) => {
+    const hole = document.createElement('button');
+    hole.type = 'button';
+    hole.className = 'bb-hole';
+    Object.entries(info).forEach(([key, value]) => {
+      hole.dataset[key] = String(value);
     });
-    traces.forEach(trace => trace.classList.toggle('active', trace.dataset.col === col));
-    $('#bbHint').textContent = `On a small breadboard like this, holes in the same column are connected. The cyan line is the hidden clip. Row ${Number(row) + 1} is gold so you can see those holes are not joined.`;
+    hole.setAttribute('aria-label', label);
+    holes.push(hole);
+    return hole;
+  };
+
+  const addRail = (polarity, railId) => {
+    const rail = document.createElement('div');
+    rail.className = `bb-rail ${polarity}`;
+    rail.dataset.railId = railId;
+    const label = document.createElement('span');
+    label.className = 'bb-rail-label';
+    label.textContent = polarity === 'plus' ? '+' : '−';
+    rail.appendChild(label);
+    const trace = document.createElement('span');
+    trace.className = 'bb-rail-trace';
+    rail.appendChild(trace);
+    const mark = polarity === 'plus' ? '+' : 'minus';
+    for (let c = 0; c < cols; c++) {
+      rail.appendChild(makeHole(
+        { type: 'rail', polarity, railId, col: c },
+        `Power rail ${mark}, hole ${c + 1}`
+      ));
+    }
+    board.appendChild(rail);
+  };
+
+  const addBank = bankId => {
+    const wrap = document.createElement('div');
+    wrap.className = 'bb-bank';
+    const traces = document.createElement('div');
+    traces.className = 'bb-traces';
+    traces.setAttribute('aria-hidden', 'true');
+    for (let c = 0; c < cols; c++) {
+      const trace = document.createElement('span');
+      trace.className = 'bb-trace';
+      trace.dataset.bank = bankId;
+      trace.dataset.col = String(c);
+      traces.appendChild(trace);
+    }
+    wrap.appendChild(traces);
+    for (let r = 0; r < bankRows; r++) {
+      wrap.appendChild(Object.assign(document.createElement('span'), { className: 'bb-spacer' }));
+      for (let c = 0; c < cols; c++) {
+        wrap.appendChild(makeHole(
+          { type: 'circuit', bank: bankId, row: r, col: c },
+          `Circuit column ${c + 1}, ${bankId === 'a' ? 'top' : 'bottom'} bank, hole ${r + 1}`
+        ));
+      }
+    }
+    board.appendChild(wrap);
+  };
+
+  addRail('plus', 'top-plus');
+  addRail('minus', 'top-minus');
+  addBank('a');
+  const gutter = document.createElement('div');
+  gutter.className = 'bb-gutter';
+  gutter.setAttribute('aria-hidden', 'true');
+  board.appendChild(gutter);
+  addBank('b');
+  addRail('plus', 'bot-plus');
+  addRail('minus', 'bot-minus');
+
+  const paint = hole => {
+    const { type, polarity, railId, bank, row, col } = hole.dataset;
+    holes.forEach(el => {
+      let linked = false;
+      let sameRow = false;
+      if (type === 'rail') {
+        linked = el.dataset.railId === railId;
+      } else if (el.dataset.type === 'circuit' && el.dataset.bank === bank) {
+        linked = el.dataset.col === col;
+        sameRow = el.dataset.row === row && el.dataset.col !== col;
+      }
+      el.classList.toggle('linked', linked);
+      el.classList.toggle('same-row', sameRow);
+    });
+    $$('.bb-trace', board).forEach(trace => {
+      trace.classList.toggle('active', type === 'circuit' && trace.dataset.bank === bank && trace.dataset.col === col);
+    });
+    $$('.bb-rail-trace', board).forEach(trace => {
+      trace.classList.toggle('active', trace.parentElement?.dataset.railId === railId);
+    });
+    const hint = $('#bbHint');
+    if (!hint) return;
+    if (type === 'rail') {
+      hint.textContent = polarity === 'plus'
+        ? 'That whole + rail is one metal strip. Every + hole on this edge is connected. The + rail on the other edge is a separate strip.'
+        : 'That whole − rail is one metal strip. Every − hole on this edge is connected. The − rail on the other edge is a separate strip.';
+    } else {
+      hint.textContent = 'Circuit area: holes in the same column are connected — only on this side of the gap. Gold is the same row, not joined. The gap breaks the column in two.';
+    }
   };
 
   board.addEventListener('click', e => {
     const hole = e.target.closest('.bb-hole');
     if (!hole) return;
-    paint(hole.dataset.row, hole.dataset.col);
+    paint(hole);
   });
-  paint('0', '0');
+  paint(holes[0]);
 }
 
 let ina = false;
@@ -483,15 +549,15 @@ function paintHBridge(cls, leftShort, rightShort) {
   else if (cls === 'forward') hint.textContent = 'Forward: S1 and S4 are ON. Current goes left to right through the motor.';
   else if (cls === 'reverse') hint.textContent = 'Reverse: S2 and S3 are ON. Current goes right to left through the motor. Unused branches stay off.';
   else if (cls === 'brake') hint.textContent = 'Both motor terminals sit on the same rail, so the motor is braked.';
-  else hint.textContent = 'No complete path. Tap a switch button, or use INA / INB to set a whole side.';
+  else hint.textContent = 'No complete path. Tap a switch button, or use IN1 / IN2 to set a whole side.';
 }
 
 function updateMotor() {
   if (!$('#inaBtn')) return;
-  $('#inaBtn').textContent = `INA: ${ina ? 'High' : 'Low'}`;
+  $('#inaBtn').textContent = `IN1: ${ina ? 'High' : 'Low'}`;
   $('#inaBtn').classList.toggle('on', ina);
   $('#inaBtn').setAttribute('aria-pressed', String(ina));
-  $('#inbBtn').textContent = `INB: ${inb ? 'High' : 'Low'}`;
+  $('#inbBtn').textContent = `IN2: ${inb ? 'High' : 'Low'}`;
   $('#inbBtn').classList.toggle('on', inb);
   $('#inbBtn').setAttribute('aria-pressed', String(inb));
   $$('[data-ina]').forEach(p => p.classList.toggle('active', p.dataset.ina === (ina ? 'high' : 'low')));
@@ -617,15 +683,15 @@ function initAssemblyStepper() {
   initStepper('assemblyStepper', [
     {
       title: 'Orient the motor',
-      html: '<p>Orient the motor such that the wire side faces you and pull the wire under the motor. Make sure the wires coming out are on the same side as the small circle on the side of the motor (circled).</p>',
+      html: '<p>Orient the motor such that the black part faces you and pull the wire under the motor. Make sure the wires coming out are on the same side as the small circle on the side of the motor (circled).</p>',
       image: 'assets/assembly/step-1.jpg',
       alt: 'Motor with wires pulled under, small circle on the same side as the wires'
     },
     {
       title: 'Seat the motor',
-      html: '<ol class="build-steps"><li>Thread both red and black wires through the hole on the side of the motor.</li><li>Ensure that the small circle is facing the outer wall. <strong>DO NOT try to insert the motor where the small circle is facing the inner wall. ESPECIALLY NOT BY FORCE! You may damage the motor or chassis.</strong> The motor axle will slide into the circular hole from the top. If you inserted it according to the orientation in step 1, the motor should fit in easily.</li><li>For best results, push the small rubber cube into the slot such that it presses against the outer wall, holding it securely in the slot.</li></ol>',
+      html: '<ol class="build-steps"><li>Thread both red and black wires through the hole on the side of the car body.</li><li>Ensure that the small circle is facing the outer wall. <strong>DO NOT try to insert the motor where the small circle is facing the inner wall. ESPECIALLY NOT BY FORCE! You may damage the motor or chassis.</strong> The motor axle will slide into the circular hole from the top. If you inserted it according to the orientation in step 1, the motor should fit in easily.</li><li>For best results, push the ziptie into the slot such that it presses against the outer wall, holding it securely in the slot.</li></ol>',
       image: 'assets/assembly/step-2.jpg',
-      alt: 'Motor seated in the chassis with wires through the side hole, peg on the outer wall, and rubber cube in the slot'
+      alt: 'Motor seated in the chassis with wires through the hole on the side of the car body, peg on the outer wall, and ziptie in the slot'
     },
     {
       title: 'Fit the ball bearing',
@@ -722,7 +788,7 @@ const quizzes = {
         { id: 'h1', type: 'mcq', prompt: 'Why do we use an H-bridge with a DC motor?', options: ['To make the battery last forever', 'To let the same motor spin forwards or backwards by changing switch paths', 'To turn the motor into a speaker', 'To connect Wi-Fi'], correct: 1, hint: 'Direction control.', answer: 'An H-bridge flips which way current goes through the motor.' },
         { id: 'h2', type: 'mcq', prompt: 'To move forwards, which pair of switches should be closed?', options: ['S1 and S3', 'S1 and S4', 'S2 and S4', 'All four'], correct: 1, hint: 'Opposite corners.', answer: 'S1 and S4 close for forward. S2 and S3 close for reverse.' },
         { id: 'h3', type: 'mcq', prompt: 'What is the dangerous move on an H-bridge?', options: ['Leaving all switches open', 'Closing both switches on the same side, like S1 and S2, which shorts power to ground', 'Spinning the motor slowly', 'Using a breadboard first'], correct: 1, hint: 'Never give electricity a shortcut around the motor.', answer: 'Closing S1 and S2 together (or S3 and S4) can short the supply. Do not do that.' },
-        { id: 'h4', type: 'table', prompt: 'Fill INA and INB for each motor action.', rows: [{ label: 'Forward', a: 'High', b: 'Low' }, { label: 'Reverse', a: 'Low', b: 'High' }], hint: 'INA High + INB Low = forward.', answer: 'Forward: INA High, INB Low. Reverse: INA Low, INB High.' }
+        { id: 'h4', type: 'table', prompt: 'Fill IN1 and IN2 for each motor action.', rows: [{ label: 'Forward', a: 'High', b: 'Low' }, { label: 'Reverse', a: 'Low', b: 'High' }], hint: 'IN1 High + IN2 Low = forward.', answer: 'Forward: IN1 High, IN2 Low. Reverse: IN1 Low, IN2 High.' }
       ]
     }
   ],
@@ -845,7 +911,7 @@ function renderQuestion(q) {
   if (q.type === 'mcq') {
     body = q.options.map((opt, i) => `<label><input type="radio" name="${q.id}" value="${i}" /> ${String.fromCharCode(65 + i)}. ${opt}</label>`).join('');
   } else if (q.type === 'table') {
-    body = `<div class="fill-grid"><strong>Action</strong><strong>INA</strong><strong>INB</strong>${q.rows.map((row, i) => `<span>${row.label}</span><select data-qid="${q.id}" data-row="${i}" data-col="a"><option value="">Choose...</option><option>High</option><option>Low</option></select><select data-qid="${q.id}" data-row="${i}" data-col="b"><option value="">Choose...</option><option>High</option><option>Low</option></select>`).join('')}</div>`;
+    body = `<div class="fill-grid"><strong>Action</strong><strong>IN1</strong><strong>IN2</strong>${q.rows.map((row, i) => `<span>${row.label}</span><select data-qid="${q.id}" data-row="${i}" data-col="a"><option value="">Choose...</option><option>High</option><option>Low</option></select><select data-qid="${q.id}" data-row="${i}" data-col="b"><option value="">Choose...</option><option>High</option><option>Low</option></select>`).join('')}</div>`;
   } else {
     body = `<input type="text" data-qid="${q.id}" placeholder="Type your answer..." />`;
   }
