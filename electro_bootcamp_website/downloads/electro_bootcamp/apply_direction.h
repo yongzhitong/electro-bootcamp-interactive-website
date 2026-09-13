@@ -1,5 +1,11 @@
 // ============================================================
-// STUDENT FILE — implement motor direction control here
+// STUDENT FILE
+//
+// 1) Set your own Wi-Fi name and password so your car is unique.
+//    AP_SSID: 1–32 characters. Example: ELECTRO-Car-07
+//    AP_PASSWORD: 8–63 characters.
+//
+// 2) Then implement motor direction control below.
 //
 // This function is called whenever a direction button is pressed
 // (or released) on the website.
@@ -17,6 +23,9 @@
 // ============================================================
 
 #pragma once
+
+const char* AP_SSID     = "ELECTRO-Car-XX"; // change XX to your number
+const char* AP_PASSWORD = "12345678";       // at least 8 characters
 
 void applyDirection(Dir d) {
   currentDir = d;

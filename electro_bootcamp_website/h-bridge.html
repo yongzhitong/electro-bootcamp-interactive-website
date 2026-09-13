@@ -89,6 +89,7 @@
         <p class="eyebrow">2.2 What is an H-bridge?</p>
         <h2>Four switches, one motor, letter H</h2>
         <p>You just flipped the battery by hand. On a car that is messy. An H-bridge does the same job with switches. Imagine the motor sitting on the cross-bar of a letter H. Opposite corners on = spin. Same side on = danger.</p>
+        <p><strong>IN1</strong> and <strong>IN2</strong> are the signals the PCB uses to control the H-bridge. They are also what you will set HIGH or LOW when you code later.</p>
       </div>
       <div class="motor-layout">
         <div class="hbridge-card">
@@ -196,6 +197,7 @@
         </div>
         <div class="truth-card">
           <h3>IN1 and IN2</h3>
+          <p>These are the PCB control signals for the H-bridge — the same two you will code later.</p>
           <div class="toggle-row" role="group" aria-label="IN1 and IN2 controls">
             <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">IN1: Low</button>
             <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">IN2: Low</button>
@@ -249,6 +251,10 @@
         </div>
         <div class="callout" style="margin-top:16px">If nothing spins: check battery, motor wires, and that opposite corners — not the same pillar — are closed.</div>
       </div>
+      <figure class="build-start-photo">
+        <img src="assets/h-bridge/breadboard-start.jpg" alt="Starting kit: breadboard, yellow DC motor, and 4-AAA battery pack with loose wires" />
+        <figcaption>Start here. You have a breadboard, a motor, and a battery pack. Use these parts to build the H-bridge.</figcaption>
+      </figure>
     </section>
 
     <section class="panel reveal" id="connection">

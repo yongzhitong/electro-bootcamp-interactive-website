@@ -1,9 +1,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-// SoftAP credentials (ESP32 will broadcast this SSID)
-const char* AP_SSID     = "ESP32-Controller"; // 1–32 chars
-const char* AP_PASSWORD = "12345678";         // 8–63 chars (WPA2)
+// SoftAP name and password live in apply_direction.h so students can set their own.
 
 // ---- Direction pins (edit as needed) ----
 const uint8_t AIN1 = 21;

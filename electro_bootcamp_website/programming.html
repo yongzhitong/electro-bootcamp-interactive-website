@@ -159,6 +159,25 @@
       </div>
     </section>
 
+    <section class="lesson-section reveal" id="wifi-name">
+      <div class="lesson-copy">
+        <p class="eyebrow">3.6 Your car’s Wi-Fi</p>
+        <h2>Set your own name and password</h2>
+        <p>Still in <code>apply_direction.h</code>, change <strong>AP_SSID</strong> and <strong>AP_PASSWORD</strong> so your phone joins <em>your</em> car, not the one next to you.</p>
+        <p>The Wi-Fi name is 1–32 characters. The password must be at least 8 characters. Upload again after you change them.</p>
+        <div class="callout">The car’s page is still <strong>192.168.4.1</strong>. You are only changing the hotspot name and password, not that address.</div>
+      </div>
+      <div class="interactive-card">
+        <div class="code-editor" aria-label="Wi-Fi name and password in apply_direction.h">
+          <header>apply_direction.h · your hotspot</header>
+          <pre><span class="cm">// Change XX to your number. Password: 8+ characters.</span>
+<span class="kw">const char*</span> AP_SSID     = <span class="str">"ELECTRO-Car-XX"</span>;
+<span class="kw">const char*</span> AP_PASSWORD = <span class="str">"12345678"</span>;</pre>
+        </div>
+        <p style="margin-top:14px">Example: <code>ELECTRO-Car-07</code> with password <code>skdu2026</code>. Write both down before you upload.</p>
+      </div>
+    </section>
+
     <section class="lesson-section hint-lesson reveal" id="hint-turn">
       <div class="hint-photo">
         <img src="assets/programming/turn-hint.jpg" alt="Top view of the car chassis. A curved arrow over the front wheels shows the car rotating so the nose turns." />
@@ -207,7 +226,7 @@
         </div>
       </div>
       <div class="lesson-copy" id="wifiStepper">
-        <p class="eyebrow">3.6 Wi-Fi connection</p>
+        <p class="eyebrow">3.7 Wi-Fi connection</p>
         <h2>The ESP32 is a tiny hotspot</h2>
         <div class="step-count"><span data-step-now>1</span>/<span data-step-total>5</span></div>
         <h3 data-step-title>ESP32 becomes a mini Wi-Fi shop</h3>
@@ -223,7 +242,7 @@
 
     <section class="panel reveal worksheet-panel" id="quiz">
       <div class="section-heading compact">
-        <p class="eyebrow">3.7 Checkpoint</p>
+        <p class="eyebrow">3.8 Checkpoint</p>
         <h2>Code + Wi-Fi check</h2>
         <p>If pins and Wi-Fi both work, the afternoon build is just mechanical. If they do not, fix it now.</p>
       </div>

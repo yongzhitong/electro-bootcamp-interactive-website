@@ -658,9 +658,9 @@ function initWifiStepper() {
   const photo = $('#wifiStepPhoto');
   const photoTitle = $('#wifiPhotoTitle');
   initStepper('wifiStepper', [
-    { title: 'ESP32 becomes a mini Wi-Fi shop', text: 'Your board starts a local access point. It is a tiny network that only exists around your car.', why: 'No school Wi-Fi needed. Phone talks straight to the car.' },
-    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look under Available networks for a name like ELECTRO-Car-15. Your number may be different.', why: 'If two cars share one name, phones can get confused.', image: 'assets/programming/wifi-step-2.jpg', alt: 'Phone Wi-Fi list with ELECTRO-Car-15 under available networks' },
-    { title: 'Join the car network', text: 'Tap the car Wi-Fi and connect. Your phone may say “No internet”. That is normal. Stay on that network.', why: 'This network is only for control, not YouTube.', image: 'assets/programming/wifi-step-3.jpg', alt: 'Phone connected to ELECTRO-Car-15 with no internet' },
+    { title: 'ESP32 becomes a mini Wi-Fi shop', text: 'Your board starts a local access point using the AP_SSID and AP_PASSWORD you set in apply_direction.h.', why: 'No school Wi-Fi needed. Phone talks straight to the car.' },
+    { title: 'Open phone Wi-Fi settings', text: 'Turn on Wi-Fi and look for the name you chose, such as ELECTRO-Car-07. Do not join a neighbour’s car.', why: 'If two cars share one name, phones can get confused.', image: 'assets/programming/wifi-step-2.jpg', alt: 'Phone Wi-Fi list with ELECTRO-Car-15 under available networks' },
+    { title: 'Join the car network', text: 'Tap your car Wi-Fi and type the password you set. Your phone may say “No internet”. That is normal. Stay on that network.', why: 'This network is only for control, not YouTube.', image: 'assets/programming/wifi-step-3.jpg', alt: 'Phone connected to ELECTRO-Car-15 with no internet' },
     { title: 'Open the control website', text: 'In the phone browser, type 192.168.4.1. You should see ESP32 Arrow Control with the four arrows and speed sliders.', why: 'The ESP32 is also a tiny web server.', image: 'assets/programming/wifi-step-4.jpg', alt: 'Phone browser open at 192.168.4.1 showing ESP32 Arrow Control, Active NONE' },
     { title: 'Test drive', text: 'Hold an arrow. Active should change, like UP. If the wheels move, your code and Wi-Fi both work. Let go to stop.', why: 'Fix problems now, before the race track gets busy.', image: 'assets/programming/wifi-step-5.jpg', alt: 'ESP32 Arrow Control with the up button green and Active UP' }
   ], (step, index) => {
@@ -771,11 +771,11 @@ const quizzes = {
       title: 'Checkpoint · Circuit reading',
       tag: 'After symbols and breadboard',
       questions: [
-        { id: 'c1', type: 'mcq', prompt: 'Why do engineers draw circuit diagrams instead of only photographing the real wires?', options: ['Photos are not allowed in class.', 'Diagrams use standard symbols so a messy real circuit becomes easy to read and share.', 'Diagrams make the circuit use less power.', 'Only computers can understand diagrams.'], correct: 1, hint: 'Think “simplify and communicate”.', answer: 'Diagrams simplify real wiring into standard symbols that anyone on the team can follow.' },
-        { id: 'c2', type: 'mcq', prompt: 'Two LEDs share one path from the battery. If one LED is removed, both go out. What connection is that?', options: ['Parallel', 'Series', 'Wireless', 'Short circuit'], correct: 1, hint: 'One road only.', answer: 'Series. One broken part opens the whole loop.' },
-        { id: 'c5', type: 'mcq', prompt: 'A lamp stays dark. What must be true?', options: ['Current can flow even with no voltage.', 'Voltage is the flow, current is the push.', 'Current only flows if voltage is pushing, and voltage needs a power source across the lamp.', 'Lamps never need a battery.'], correct: 2, hint: 'Think push, then flow.', answer: 'No battery across the lamp means no voltage (push), so no current (flow). The lamp stays dark.' },
+        { id: 'c1', type: 'mcq', prompt: 'Why do engineers draw circuit diagrams instead of only photographing the real wires?', options: ['Photos are not allowed in class.', 'Diagrams make the circuit use less power.', 'Diagrams use standard symbols so a messy real circuit becomes easy to read and share.', 'Only computers can understand diagrams.'], correct: 2, hint: 'Think “simplify and communicate”.', answer: 'Diagrams simplify real wiring into standard symbols that anyone on the team can follow.' },
+        { id: 'c2', type: 'mcq', prompt: 'Two LEDs share one path from the battery. If one LED is removed, both go out. What connection is that?', options: ['Series', 'Parallel', 'Wireless', 'Short circuit'], correct: 0, hint: 'One road only.', answer: 'Series. One broken part opens the whole loop.' },
+        { id: 'c5', type: 'mcq', prompt: 'Your friend connects 10 lamps in parallel. The battery gets hot. Why is that?', options: ['The battery voltage is too high.', 'The lamps have turned into motors.', 'Parallel circuits block all current.', 'The battery current is too high.'], correct: 3, hint: 'In parallel, each lamp adds another path for current to leave the battery.', answer: 'Each extra parallel lamp adds another path, so the battery has to supply more current. That extra current makes the battery heat up.' },
         { id: 'c3', type: 'mcq', prompt: 'On a breadboard, which holes are usually connected?', options: ['Random holes', 'Holes in the same column of a terminal strip', 'Only the four corner holes', 'None — you must solder them'], correct: 1, hint: 'Columns are the secret.', answer: 'Holes in the same column are linked inside the board.' },
-        { id: 'c4', type: 'mcq', prompt: 'A PCB is best described as…', options: ['A paper sketch of a circuit', 'A solidified, printed version of a circuit with copper tracks', 'A type of battery', 'A Wi-Fi password'], correct: 1, hint: 'Printed Circuit Board.', answer: 'A PCB is a solid board with printed copper tracks. Your kit includes one.' }
+        { id: 'c4', type: 'mcq', prompt: 'A PCB is best described as…', options: ['A solidified, printed version of a circuit with copper tracks', 'A paper sketch of a circuit', 'A type of battery', 'A Wi-Fi password'], correct: 0, hint: 'Printed Circuit Board.', answer: 'A PCB is a solid board with printed copper tracks. Your kit includes one.' }
       ]
     }
   ],
@@ -784,10 +784,10 @@ const quizzes = {
       title: 'Checkpoint · H-bridge logic',
       tag: 'After the switch demo',
       questions: [
-        { id: 'h0', type: 'mcq', prompt: 'You connect a battery straight to a motor. What happens if you rotate the battery so + and − swap?', options: ['The motor always spins the same way', 'Current reverses, so the motor spins the other way', 'The motor becomes a lamp', 'Voltage disappears'], correct: 1, hint: 'Think about the push from Circuits.', answer: 'Swapping + and − reverses the push, so current goes the other way and the motor reverses.' },
-        { id: 'h1', type: 'mcq', prompt: 'Why do we use an H-bridge with a DC motor?', options: ['To make the battery last forever', 'To let the same motor spin forwards or backwards by changing switch paths', 'To turn the motor into a speaker', 'To connect Wi-Fi'], correct: 1, hint: 'Direction control.', answer: 'An H-bridge flips which way current goes through the motor.' },
-        { id: 'h2', type: 'mcq', prompt: 'To move forwards, which pair of switches should be closed?', options: ['S1 and S3', 'S1 and S4', 'S2 and S4', 'All four'], correct: 1, hint: 'Opposite corners.', answer: 'S1 and S4 close for forward. S2 and S3 close for reverse.' },
-        { id: 'h3', type: 'mcq', prompt: 'What is the dangerous move on an H-bridge?', options: ['Leaving all switches open', 'Closing both switches on the same side, like S1 and S2, which shorts power to ground', 'Spinning the motor slowly', 'Using a breadboard first'], correct: 1, hint: 'Never give electricity a shortcut around the motor.', answer: 'Closing S1 and S2 together (or S3 and S4) can short the supply. Do not do that.' },
+        { id: 'h0', type: 'mcq', prompt: 'You connect a battery straight to a motor. What happens if you rotate the battery so + and − swap?', options: ['The motor always spins the same way', 'The motor becomes a lamp', 'Current reverses, so the motor spins the other way', 'Voltage disappears'], correct: 2, hint: 'Think about the push from Circuits.', answer: 'Swapping + and − reverses the push, so current goes the other way and the motor reverses.' },
+        { id: 'h1', type: 'mcq', prompt: 'Why do we use an H-bridge with a DC motor?', options: ['To make the battery last forever', 'To turn the motor into a speaker', 'To connect Wi-Fi', 'To let the same motor spin forwards or backwards by changing switch paths'], correct: 3, hint: 'Direction control.', answer: 'An H-bridge flips which way current goes through the motor.' },
+        { id: 'h2', type: 'mcq', prompt: 'To move forwards, which pair of switches should be closed?', options: ['S1 and S4', 'S1 and S3', 'S2 and S4', 'All four'], correct: 0, hint: 'Opposite corners.', answer: 'S1 and S4 close for forward. S2 and S3 close for reverse.' },
+        { id: 'h3', type: 'mcq', prompt: 'What is the dangerous move on an H-bridge?', options: ['Leaving all switches open', 'Spinning the motor slowly', 'Closing both switches on the same side, like S1 and S2, which shorts power to ground', 'Using a breadboard first'], correct: 2, hint: 'Never give electricity a shortcut around the motor.', answer: 'Closing S1 and S2 together (or S3 and S4) can short the supply. Do not do that.' },
         { id: 'h4', type: 'table', prompt: 'Fill IN1 and IN2 for each motor action.', rows: [{ label: 'Forward', a: 'High', b: 'Low' }, { label: 'Reverse', a: 'Low', b: 'High' }], hint: 'IN1 High + IN2 Low = forward.', answer: 'Forward: IN1 High, IN2 Low. Reverse: IN1 Low, IN2 High.' }
       ]
     }
@@ -797,8 +797,8 @@ const quizzes = {
       title: 'Checkpoint · Motor code + Wi-Fi',
       tag: 'After applyDirection and the access point',
       questions: [
-        { id: 'p1', type: 'mcq', prompt: 'What does digitalWrite(AIN2, HIGH) do?', options: ['Reads the value on pin AIN2', 'Sets pin AIN2 to HIGH', 'Sets every motor pin to HIGH', 'Checks if d == UP'], correct: 1, hint: 'Write means set. Digital means HIGH or LOW.', answer: 'It writes HIGH onto pin AIN2.' },
-        { id: 'p2', type: 'mcq', prompt: 'Your phone says “Connected, no internet” on the car Wi-Fi. What should you do?', options: ['Throw the ESP32 away', 'That is normal. Open the control website anyway.', 'The car is broken', 'Connect to school Wi-Fi instead'], correct: 1, hint: 'Local access point.', answer: 'The ESP32 network is local only. No internet is expected.' },
+        { id: 'p1', type: 'mcq', prompt: 'What does digitalWrite(AIN2, HIGH) do?', options: ['Reads the value on pin AIN2', 'Sets every motor pin to HIGH', 'Sets pin AIN2 to HIGH', 'Checks if d == UP'], correct: 2, hint: 'Write means set. Digital means HIGH or LOW.', answer: 'It writes HIGH onto pin AIN2.' },
+        { id: 'p2', type: 'mcq', prompt: 'Your phone says “Connected, no internet” on the car Wi-Fi. What should you do?', options: ['Throw the ESP32 away', 'The car is broken', 'Connect to school Wi-Fi instead', 'That is normal. Open the control website anyway.'], correct: 3, hint: 'Local access point.', answer: 'The ESP32 network is local only. No internet is expected.' },
         { id: 'p3', type: 'text', prompt: 'Name the two things you must test before you build the chassis: the motor pins and the…', keywords: ['wifi', 'wi-fi', 'wi fi'], hint: 'Phone + access point.', answer: 'Wi-Fi / the phone control link.' }
       ]
     }
@@ -986,9 +986,49 @@ function confetti(count = 50) {
   }
 }
 
+function initTimetable() {
+  if ($('#timetableDialog')) return;
+  document.body.insertAdjacentHTML('beforeend', `
+    <button id="timetableOpen" class="timetable-open" type="button" aria-haspopup="dialog" aria-controls="timetableDialog" aria-label="Open timetable">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.2"/>
+        <path d="M12 7.8 V12.2 L15.2 14.1"/>
+      </svg>
+    </button>
+    <dialog id="timetableDialog" class="timetable-dialog" aria-labelledby="timetableTitle">
+      <div class="timetable-head">
+        <div>
+          <p class="eyebrow">21st September 2026</p>
+          <h2 id="timetableTitle">Itinerary</h2>
+          <p>9:00 am – 3:00 pm</p>
+        </div>
+        <button type="button" class="button ghost" data-timetable-close>Close</button>
+      </div>
+      <ol class="timetable-list">
+        <li><time>9:00 – 9:15 am</time><p>Gathering and sorting to classes</p></li>
+        <li><time>9:15 – 9:30 am</time><p>Introduction (What is ELECTRO, who the facilitators are, what we will do today) and ice-breaker</p></li>
+        <li><time>9:30 am – 12:20 pm</time><p>Sections 1 and 2 of the syllabus</p></li>
+        <li><time>12:30 – 1:00 pm</time><p>Lunch break</p></li>
+        <li><time>1:00 – 2:30 pm</time><p>Sections 3, 4 and 5 of the syllabus</p></li>
+        <li><time>2:30 – 3:00 pm</time><p>Wrap-up, photo session, and feedback</p></li>
+      </ol>
+    </dialog>
+  `);
+
+  const dialog = $('#timetableDialog');
+  const openBtn = $('#timetableOpen');
+  const close = () => dialog.close();
+  openBtn.addEventListener('click', () => dialog.showModal());
+  $('[data-timetable-close]', dialog)?.addEventListener('click', close);
+  dialog.addEventListener('click', event => {
+    if (event.target === dialog) close();
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   initIntro();
   initGlobalUI();
+  initTimetable();
   initHeroParticles();
   initSeriesParallel();
   initVoltageCurrent();
