@@ -65,7 +65,7 @@ body.presentation .side-nav:hover { transform: none; opacity: 1; }
 }
 .side-nav a:hover, .side-nav a.active, .nav-button:hover { color: #fff; background: rgba(255,255,255,.12); transform: translateX(3px); }
 .brand-pill { font-weight: 900; color: white !important; background: transparent !important; padding: 0 0 10px !important; }
-.brand-logo { width: 100%; border-radius: 18px; display: block; background: #000; border: 1px solid var(--line); }
+.brand-logo { width: 100%; border-radius: 18px; display: block; background: #fff; border: 1px solid var(--line); }
 .brand-icon { margin-right: 6px; color: var(--cyan); }
 
 main, header { position: relative; z-index: 2; }
@@ -364,6 +364,12 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
   border-radius: 18px; background: #f4f6fb; border: 1px solid var(--line);
 }
 .real-vs-diagram figcaption { margin-top: 8px; color: var(--muted); font-weight: 800; font-size: .88rem; }
+.why-meme { grid-column: 1 / -1; margin: 4px 0 0; }
+.why-meme img {
+  width: 100%; max-height: 560px; object-fit: contain; display: block;
+  border-radius: 22px; background: #fff; border: 1px solid var(--line);
+}
+.why-meme figcaption { margin-top: 10px; color: var(--muted); font-weight: 800; font-size: .92rem; }
 .lesson-section .bb-compare { grid-column: 1 / -1; margin-top: 8px; }
 .bb-compare img { height: min(320px, 46vw); }
 .facilitator-card { text-align: center; }
@@ -652,7 +658,7 @@ tr.active-row td { background: rgba(40,232,255,.14); color: white; }
   display: grid; grid-template-columns: 220px 1fr; gap: 28px; align-items: center; margin-bottom: 28px;
 }
 .electro-logo-card {
-  margin: 0; padding: 14px; border-radius: 28px; background: #050505;
+  margin: 0; padding: 14px; border-radius: 28px; background: #fff;
   border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 .electro-logo-card img { width: 100%; display: block; border-radius: 18px; }
