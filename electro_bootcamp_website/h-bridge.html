@@ -191,30 +191,30 @@
               <button type="button" class="hb-sw-btn" data-switch="S3" aria-pressed="false"><strong>S3</strong><span>Tap to toggle</span></button>
               <button type="button" class="hb-sw-btn" data-switch="S4" aria-pressed="false"><strong>S4</strong><span>Tap to toggle</span></button>
             </div>
-            <p id="hbHint" class="feedback">Tap a switch button, or use INA / INB to set a whole side at once.</p>
+            <p id="hbHint" class="feedback">Tap a switch button, or use IN1 / IN2 to set a whole side at once.</p>
           </div>
         </div>
         <div class="truth-card">
-          <h3>INA and INB</h3>
-          <div class="toggle-row" role="group" aria-label="INA and INB controls">
-            <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">INA: Low</button>
-            <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">INB: Low</button>
+          <h3>IN1 and IN2</h3>
+          <div class="toggle-row" role="group" aria-label="IN1 and IN2 controls">
+            <button id="inaBtn" class="logic-toggle" type="button" aria-pressed="false">IN1: Low</button>
+            <button id="inbBtn" class="logic-toggle" type="button" aria-pressed="false">IN2: Low</button>
           </div>
           <div class="ina-guide">
             <div class="guide-block">
-              <strong>INA controls the left leg</strong>
+              <strong>IN1 controls the left leg</strong>
               <p data-ina="high">High → S1 ON, S2 OFF</p>
               <p data-ina="low">Low → S1 OFF, S2 ON</p>
             </div>
             <div class="guide-block">
-              <strong>INB controls the right leg</strong>
+              <strong>IN2 controls the right leg</strong>
               <p data-inb="high">High → S3 ON, S4 OFF</p>
               <p data-inb="low">Low → S3 OFF, S4 ON</p>
             </div>
           </div>
           <div id="motorState" class="motor-state coast">Coast / open</div>
           <table class="truth-table">
-            <thead><tr><th>INA</th><th>INB</th><th>Motor action</th></tr></thead>
+            <thead><tr><th>IN1</th><th>IN2</th><th>Motor action</th></tr></thead>
             <tbody>
               <tr data-row="00"><td>Low</td><td>Low</td><td>Brake to − · S2 + S4</td></tr>
               <tr data-row="10"><td>High</td><td>Low</td><td>Forward · S1 + S4</td></tr>
